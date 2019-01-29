@@ -20,10 +20,10 @@ class Company(BaseModel):
     contact_number = models.CharField('contact number', max_length=50, null=True)
     time_zone = models.CharField('time zone', max_length=100, null=True)
     country = models.CharField('country', max_length=100, null=True)
+    groomer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="store", null=True, on_delete=models.CASCADE)
 
-    @property
-    def groomer(self):
-        return self.staff.filter(is_groomer=True).first()
+    def __unicode__(self):
+        return self.company_name
 
 
 class Locations(BaseModel):

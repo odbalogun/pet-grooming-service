@@ -14,6 +14,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=False, required=False)
+    groomer = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
 
     class Meta:
         model = Company
@@ -41,7 +42,8 @@ class StaffSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    company = serializers.StringRelatedField(many=False, read_only=False, required=False)
+    # company = serializers.PrimaryKeyRelatedField(many=False, queryset=Company.objects.all())
+    company = serializers.StringRelatedField(many=False, read_only=True)
 
     class Meta:
         model = User
@@ -49,14 +51,12 @@ class UserSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
 
-    # def create(self, validated_data):
-    #     user = User(email=validated_data['email'], first_name=validated_data['first_name'],
-    #                 last_name=validated_data['last_name'], is_groomer=validated_data['is_groomer'])
-    #
-    #     if validated_data.get('company_name'):
-    #         user.company = validated_data['company_name']
-    #     user.set_password(validated_data['password'])
-    #     user.save()
-    #     # create user token for rest authentication
-    #     Token.objects.create(user=user)
-    #     return user
+    def create(self, validated_data):
+        user = User(**validated_data)
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        # create user token for rest authentication
+        Token.objects.create(user=user)
+        return user

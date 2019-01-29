@@ -1,17 +1,17 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserCreate, LoginView, UserListView, CompanyViewSet, StaffViewSet
+from .views import UsersViewSet, LoginView, CompanyViewSet
 
 app_name = 'core'
 
 router = DefaultRouter()
 router.register('company', CompanyViewSet, base_name='company')
-router.register('staff', StaffViewSet, base_name='staff')
+# router.register('users', UsersViewSet, base_name='users')
 
 urlpatterns = [
-    path('signup/', UserCreate.as_view(), name="user_create"),
     path('login/', LoginView.as_view(), name="login"),
-    path('users/list/', UserListView.as_view(), name="user_list"),
+    path('users/', UsersViewSet.as_view(), name="users"),
+    # path('api-auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns += router.urls

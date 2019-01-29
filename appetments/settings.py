@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Configuration to use custom user model
+AUTH_USER_MODEL = 'custom_user.User'
+
 
 # Application definition
 
@@ -127,10 +130,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-
-# Configuration to use custom user model
-AUTH_USER_MODEL = 'custom_user.User'
 
 
 # Enable token authentication for REST apis

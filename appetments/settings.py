@@ -25,7 +25,7 @@ SECRET_KEY = 'ac=t6w-(j#ip!d1*+#t*37u4fasz9*8t6207n(5--uy!e0owfr'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['46.101.224.173']
 
 # Configuration to use custom user model
 AUTH_USER_MODEL = 'custom_user.User'

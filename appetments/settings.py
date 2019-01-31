@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'custom_user.apps.CustomUserConfig',
     'core',
+    'corsheaders',
     # add this to enable token authentication
     'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -147,3 +149,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+# Configuration for CORS
+CORS_ORIGIN_ALLOW_ALL = True

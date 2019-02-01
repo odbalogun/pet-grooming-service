@@ -30,8 +30,6 @@ class LoginView(APIView):
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
-    # authentication_classes = ()
-    # permission_classes = ()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = Company.objects.all()
     serializer_class = CompanySerializer

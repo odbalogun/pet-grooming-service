@@ -25,6 +25,9 @@ class Company(BaseModel):
     def __unicode__(self):
         return self.company_name
 
+    def __str__(self):
+        return self.company_name
+
 
 class Locations(BaseModel):
     company = models.ForeignKey(Company, related_name='locations', on_delete=models.CASCADE)

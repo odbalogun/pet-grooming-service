@@ -88,3 +88,27 @@ class StaffViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+class LocationViewSet(viewsets.ModelViewSet):
+    queryset = Locations.objects.all()
+    serializer_class = LocationSerializer
+
+    def list(self, request, *args, **kwargs):
+        if not self.request.user.company:
+            return Response({"detail": 'No company provided'}, status.HTTP_400_BAD_REQUEST)
+        queryset = self.queryset.filter(company=request.data.get('company'))
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        if not self.request.user.company:
+            return Response({"detail": "User must have a company", "error_code": 2}, status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        data["company"] = request.user.company.__dict__
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -17,7 +17,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
-    groomer = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
+    groomer = serializers.PrimaryKeyRelatedField(many=False, required=False, queryset=User.objects.all())
 
     class Meta:
         model = Company

@@ -1,19 +1,36 @@
 from rest_framework import generics
-from rest_framework.views import APIView
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework import permissions
-
 from .models import Company, Locations
 from .serializers import CompanySerializer, LocationSerializer, GroomerSerializer, StaffSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from pytz import utc
+import datetime
 
 User = get_user_model()
 
 
+class ObtainExpiringAuthToken(ObtainAuthToken):
+    def post(self, request, **kwargs):
+        serializer = AuthTokenSerializer(data=request.data)
+
+        if serializer.is_valid():
+            token, created = Token.objects.get_or_create(user=serializer.validated_data['user'])
+            if not created:
+                # update the created time of the token to keep it valid
+                token.created = datetime.datetime.utcnow().replace(tzinfo=utc)
+                token.save()
+
+            return Response({"auth_token": token.key, "id": token.user.id})
+        return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+'''
 class LoginView(APIView):
     permission_classes = ()
 
@@ -27,6 +44,7 @@ class LoginView(APIView):
             return Response({"auth_token": user.auth_token.key, "id": user.id})
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+'''
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -68,7 +86,7 @@ class StaffViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         if not self.request.user.company:
             return Response({"detail": 'No company provided'}, status.HTTP_400_BAD_REQUEST)
-        queryset = self.queryset.filter(company=request.data.get('company'), is_groomer=False)
+        queryset = self.queryset.filter(company=self.request.user.company.pk, is_groomer=False)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -80,8 +98,8 @@ class StaffViewSet(viewsets.ModelViewSet):
         if not self.request.user.company:
             return Response({"detail": "User must have a company", "error_code": 2}, status.HTTP_400_BAD_REQUEST)
 
-        data = request.data
-        data["company"] = request.user.company
+        data = self.request.data
+        data["company"] = self.request.user.company.pk
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -96,7 +114,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         if not self.request.user.company:
             return Response({"detail": 'No company provided'}, status.HTTP_400_BAD_REQUEST)
-        queryset = self.queryset.filter(company=request.data.get('company'))
+        queryset = self.queryset.filter(company=self.request.user.company.pk)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -105,8 +123,8 @@ class LocationViewSet(viewsets.ModelViewSet):
         if not self.request.user.company:
             return Response({"detail": "User must have a company", "error_code": 2}, status.HTTP_400_BAD_REQUEST)
 
-        data = request.data
-        data["company"] = request.user.company.__dict__
+        data = self.request.data
+        data["company"] = self.request.user.company.pk
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

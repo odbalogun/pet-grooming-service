@@ -142,13 +142,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # Enable token authentication for REST apis
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'core.authentication.ExpiringTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+# set token expiry (in hours)
+REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24
 
 # Configuration for CORS
 CORS_ORIGIN_ALLOW_ALL = True

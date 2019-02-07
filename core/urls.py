@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GroomerViewSet, LoginView, CompanyViewSet, StaffViewSet, LocationViewSet
+from .views import GroomerViewSet, CompanyViewSet, StaffViewSet, LocationViewSet, ObtainExpiringAuthToken
 
 app_name = 'core'
 
@@ -11,8 +11,8 @@ router.register('locations', LocationViewSet, base_name='locations')
 # router.register('users', UsersViewSet, base_name='users')
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name="login"),
     path('users/', GroomerViewSet.as_view(), name="users"),
+    path('login/', ObtainExpiringAuthToken.as_view(), name="login")
     # path('api-auth/', include('rest_framework.urls')),
 ]
 

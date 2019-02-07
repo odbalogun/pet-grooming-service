@@ -7,14 +7,17 @@ User = get_user_model()
 
 
 class LocationSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+
     class Meta:
         model = Locations
         fields = '__all__'
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    locations = LocationSerializer(many=True, read_only=False, required=False)
-    groomer = serializers.PrimaryKeyRelatedField(many=False, required=False, queryset=User.objects.all())
+    locations = LocationSerializer(many=True, read_only=True, required=False)
+    groomer = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
 
     class Meta:
         model = Company
@@ -22,7 +25,8 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class StaffSerializer(serializers.ModelSerializer):
-    company = CompanySerializer(many=False, read_only=False, required=True)
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
 
     class Meta:
         model = User

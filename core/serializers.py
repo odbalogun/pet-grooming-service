@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Company, Locations
+from .models import Company, Locations, ProductBrands
 
 User = get_user_model()
 
@@ -66,3 +66,12 @@ class GroomerSerializer(serializers.ModelSerializer):
         # create user token for rest authentication
         Token.objects.create(user=user)
         return user
+
+
+class ProductBrandSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+
+    class Meta:
+        model = ProductBrands
+        fields = '__all__'

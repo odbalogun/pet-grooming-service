@@ -39,3 +39,10 @@ class Locations(BaseModel):
     state = models.CharField('state', max_length=50)
     zip_code = models.CharField('zip code', max_length=50, null=True)
 
+
+class ProductBrands(BaseModel):
+    company = models.ForeignKey(Company, related_name='product_brands', on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+    brand_name = models.CharField('brand name', max_length=50)
+
+

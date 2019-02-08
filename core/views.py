@@ -12,6 +12,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.conf import settings
 from django.utils import timezone
+from core.viewsets import CustomModelViewSet
 import core.permissions as custom_permissions
 import datetime
 
@@ -87,87 +88,23 @@ class GroomerViewSet(generics.ListCreateAPIView):
     queryset = User.objects.all()
 
 
-class StaffViewSet(viewsets.ModelViewSet):
+class StaffViewSet(CustomModelViewSet):
     queryset = User.objects.all()
     serializer_class = StaffSerializer
-    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(company=self.request.user.company.pk, is_groomer=False)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        data["company"] = self.request.user.company.pk
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class LocationViewSet(viewsets.ModelViewSet):
+class LocationViewSet(CustomModelViewSet):
     queryset = Locations.objects.all()
     serializer_class = LocationSerializer
     permission_classes = (custom_permissions.HasCompany, )
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(company=self.request.user.company.pk)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        data["company"] = self.request.user.company.pk
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class ProductCategoryViewSet(viewsets.ModelViewSet):
-    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
+class ProductCategoryViewSet(CustomModelViewSet):
     queryset = ProductCategories.objects.all()
     serializer_class = ProductCategorySerializer
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(company=self.request.user.company.pk)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        data["company"] = self.request.user.company.pk
-        data["creator"] = self.request.user.pk
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
+class ProductViewSet(CustomModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductSerializer
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(company=self.request.user.company.pk)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        data["company"] = self.request.user.company.pk
-        data["creator"] = self.request.user.pk
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Company, Locations, ProductBrands
+from .models import Company, Locations, ProductCategories, Products
 
 User = get_user_model()
 
@@ -31,7 +31,6 @@ class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'password', 'company')
-        # fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -68,10 +67,21 @@ class GroomerSerializer(serializers.ModelSerializer):
         return user
 
 
-class ProductBrandSerializer(serializers.ModelSerializer):
+class ProductCategorySerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
 
     class Meta:
-        model = ProductBrands
+        model = ProductCategories
+        fields = '__all__'
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+    category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                  queryset=ProductCategories.objects.all())
+
+    class Meta:
+        model = Products
         fields = '__all__'

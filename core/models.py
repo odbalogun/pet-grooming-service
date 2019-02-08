@@ -1,4 +1,5 @@
 from django.db import models
+from djmoney.models.fields import MoneyField
 from django.conf import settings
 
 
@@ -40,9 +41,21 @@ class Locations(BaseModel):
     zip_code = models.CharField('zip code', max_length=50, null=True)
 
 
-class ProductBrands(BaseModel):
+class ProductCategories(BaseModel):
     company = models.ForeignKey(Company, related_name='product_brands', on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
-    brand_name = models.CharField('brand name', max_length=50)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    category_name = models.CharField('category name', max_length=50)
+
+
+class Products(BaseModel):
+    company = models.ForeignKey(Company, related_name='products', on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(ProductCategories, related_name='products', on_delete=models.CASCADE)
+    barcode = models.CharField('barcode', max_length=50)
+    name = models.CharField('product name', max_length=100)
+    sku = models.CharField('sku', max_length=100)
+    description = models.TextField('description')
+    retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
+    discount_price = MoneyField('discount price', max_digits=10, decimal_places=2, default_currency='USD')
 
 

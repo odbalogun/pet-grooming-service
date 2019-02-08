@@ -2,9 +2,9 @@ from rest_framework import generics
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework import permissions
-from .models import Company, Locations, ProductBrands
+from .models import Company, Locations, ProductCategories, Products
 from .serializers import CompanySerializer, LocationSerializer, GroomerSerializer, StaffSerializer, \
-    ProductBrandSerializer
+    ProductCategorySerializer, ProductSerializer
 # from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -31,7 +31,10 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
                 token.created = datetime.datetime.utcnow()
                 token.save()
 
-            return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id})
+            if token.user.company:
+                return Response({"auth_token": token.key, "company": token.user.company.company_name, "id": token.user.id})
+            else:
+                return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id})
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -126,10 +129,32 @@ class LocationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ProductBrandViewSet(viewsets.ModelViewSet):
-    permission_classes = (custom_permissions.HasCompany, )
-    queryset = ProductBrands.objects.all()
-    serializer_class = ProductBrandSerializer
+class ProductCategoryViewSet(viewsets.ModelViewSet):
+    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
+    queryset = ProductCategories.objects.all()
+    serializer_class = ProductCategorySerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset.filter(company=self.request.user.company.pk)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        data = self.request.data
+        data["company"] = self.request.user.company.pk
+        data["creator"] = self.request.user.pk
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
+    queryset = Products.objects.all()
+    serializer_class = ProductSerializer
 
     def list(self, request, *args, **kwargs):
         queryset = self.queryset.filter(company=self.request.user.company.pk)

@@ -56,7 +56,7 @@ class Products(BaseModel):
     sku = models.CharField('sku', max_length=100)
     description = models.TextField('description')
     retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
-    discount_price = MoneyField('discount price', max_digits=10, decimal_places=2, default_currency='USD')
+    discount_price = MoneyField('discount price', null=True, max_digits=10, decimal_places=2, default_currency='USD')
 
 
 class ServiceGroups(BaseModel):

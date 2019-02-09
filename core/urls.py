@@ -10,6 +10,8 @@ router.register('staff', views.StaffViewSet, base_name='staff')
 router.register('locations', views.LocationViewSet, base_name='locations')
 router.register('product-categories', views.ProductCategoryViewSet, base_name='product_categories')
 router.register('products', views.ProductViewSet, base_name='products')
+router.register('service-groups', views.ServiceGroupViewSet, base_name='service_groups')
+router.register('services', views.ServiceViewSet, base_name='services')
 
 urlpatterns = [
     path('users/', views.GroomerViewSet.as_view(), name="users"),

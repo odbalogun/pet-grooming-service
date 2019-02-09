@@ -2,9 +2,9 @@ from rest_framework import generics
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework import permissions
-from .models import Company, Locations, ProductCategories, Products
+from .models import Company, Locations, ProductCategories, Products, Services, ServiceGroups
 from .serializers import CompanySerializer, LocationSerializer, GroomerSerializer, StaffSerializer, \
-    ProductCategorySerializer, ProductSerializer
+    ProductCategorySerializer, ProductSerializer, ServiceGroupSerializer, ServiceSerializer
 # from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -108,3 +108,12 @@ class ProductViewSet(CustomModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductSerializer
 
+
+class ServiceGroupViewSet(CustomModelViewSet):
+    queryset = ServiceGroups.objects.all()
+    serializer_class = ServiceGroupSerializer
+
+
+class ServiceViewSet(CustomModelViewSet):
+    queryset = Services.objects.all()
+    serializer_class = ServiceSerializer

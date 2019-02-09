@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Company, Locations, ProductCategories, Products
+from .models import Company, Locations, ProductCategories, Products, ServiceGroups, Services
 
 User = get_user_model()
 
@@ -84,4 +84,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Products
+        fields = '__all__'
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+
+    class Meta:
+        model = Services
+        fields = '__all__'
+
+
+class ServiceGroupSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+    services = ServiceSerializer(many=True, read_only=True, required=False)
+
+    class Meta:
+        model = ServiceGroups
         fields = '__all__'

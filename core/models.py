@@ -59,3 +59,17 @@ class Products(BaseModel):
     discount_price = MoneyField('discount price', max_digits=10, decimal_places=2, default_currency='USD')
 
 
+class ServiceGroups(BaseModel):
+    company = models.ForeignKey(Company, related_name='service_groups', on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    appointment_color = models.CharField('appointment color', max_length=50)
+    name = models.CharField('group name', max_length=100)
+    description = models.TextField('description')
+
+
+class Services(BaseModel):
+    company = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
+    group = models.ForeignKey(ServiceGroups, related_name='services', on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    name = models.CharField('group name', max_length=100)
+    description = models.TextField('description')

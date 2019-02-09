@@ -22,3 +22,13 @@ class IsGroomerOrReadOnly(permissions.BasePermission):
             return True
 
         return request.user.is_groomer
+
+
+class IsGroomer(permissions.BasePermission):
+    """
+        Global permission to check if user is a groomer
+        """
+    message = "User must be a groomer"
+
+    def has_permission(self, request, view):
+        return request.user.is_groomer

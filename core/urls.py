@@ -15,7 +15,9 @@ router.register('services', views.ServiceViewSet, base_name='services')
 
 urlpatterns = [
     path('users/', views.GroomerViewSet.as_view(), name="users"),
-    path('login/', views.ObtainExpiringAuthToken.as_view(), name="login")
+    path('login/', views.ObtainExpiringAuthToken.as_view(), name="login"),
+    path('services/add-staff/', views.AddStaffToServiceView.as_view(), name="add_staff_to_service"),
+    path('services/remove-staff/', views.RemoveStaffFromServiceView.as_view(), name="remove_staff_from_service")
     # path('api-auth/', include('rest_framework.urls')),
 ]
 

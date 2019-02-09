@@ -71,5 +71,6 @@ class Services(BaseModel):
     company = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
     group = models.ForeignKey(ServiceGroups, related_name='services', on_delete=models.CASCADE)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    staff = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='services')
     name = models.CharField('group name', max_length=100)
     description = models.TextField('description')

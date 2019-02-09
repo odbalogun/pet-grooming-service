@@ -1,7 +1,6 @@
-from rest_framework import generics
-from rest_framework import status, viewsets
+from rest_framework import generics, status, viewsets, permissions
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework.views import APIView
 from .models import Company, Locations, ProductCategories, Products, Services, ServiceGroups
 from .serializers import CompanySerializer, LocationSerializer, GroomerSerializer, StaffSerializer, \
     ProductCategorySerializer, ProductSerializer, ServiceGroupSerializer, ServiceSerializer
@@ -15,6 +14,7 @@ from django.utils import timezone
 from core.viewsets import CustomModelViewSet
 import core.permissions as custom_permissions
 import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 User = get_user_model()
 EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
@@ -117,3 +117,51 @@ class ServiceGroupViewSet(CustomModelViewSet):
 class ServiceViewSet(CustomModelViewSet):
     queryset = Services.objects.all()
     serializer_class = ServiceSerializer
+
+
+class AddStaffToServiceView(APIView):
+    permission_classes = (custom_permissions.IsGroomer, custom_permissions.HasCompany)
+
+    def post(self, request):
+        # get parameters
+        try:
+            company = Company.objects.get(pk=request.user.company.pk)
+            service = Services.objects.get(pk=request.data.get("company"))
+            staff = User.objects.get(pk=request.data.get("staff"))
+        except ObjectDoesNotExist:
+            return Response({"detail": "Invalid parameters. One or more parameters do not exist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # check that service and staff belong to the company
+        if company.pk == service.company.pk == staff.company.pk:
+            # add to services
+            service.staff.add(staff)
+            # return response
+            return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({"detail": "Invalid parameters. Objects do not belong to the same company"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class RemoveStaffFromServiceView(APIView):
+    permission_classes = (custom_permissions.IsGroomer, custom_permissions.HasCompany)
+
+    def post(self, request):
+        try:
+            company = Company.objects.get(pk=request.user.company.pk)
+            service = Services.objects.get(pk=request.data.get("company"))
+            staff = User.objects.get(pk=request.data.get("staff"))
+        except ObjectDoesNotExist:
+            return Response({"detail": "Invalid parameters. One or more parameters do not exist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # check that service and staff belong to the company
+        if company.pk == service.company.pk == staff.company.pk:
+            # remove from service
+            service.staff.remove(staff)
+            # return response
+            return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({"detail": "Invalid parameters. Objects do not belong to the same company"},
+                            status=status.HTTP_400_BAD_REQUEST)
+

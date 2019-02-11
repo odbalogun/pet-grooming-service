@@ -90,6 +90,8 @@ class ProductSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
+    group = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                               queryset=ServiceGroups.objects.all())
 
     class Meta:
         model = Services

@@ -21,7 +21,7 @@ class IsGroomerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return request.user.is_groomer
+        return request.user.is_authenticated and request.user.is_groomer
 
 
 class IsGroomer(permissions.BasePermission):
@@ -31,4 +31,4 @@ class IsGroomer(permissions.BasePermission):
     message = "User must be a groomer"
 
     def has_permission(self, request, view):
-        return request.user.is_groomer
+        return request.user.is_authenticated and request.user.is_groomer

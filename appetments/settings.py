@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'corsheaders',
     # add this to enable token authentication
     'rest_framework.authtoken',
+    # for swagger
+    'rest_framework_swagger',
+    # for money fields
+    'djmoney',
 ]
 
 MIDDLEWARE = [

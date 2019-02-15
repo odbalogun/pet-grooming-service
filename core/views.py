@@ -57,6 +57,12 @@ class LoginView(APIView):
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
+    """
+    This is the company model
+
+    create:
+        Returns company id
+    """
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = Company.objects.all()
     serializer_class = CompanySerializer

@@ -25,7 +25,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class StaffSerializer(serializers.ModelSerializer):
-    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=False,
                                                  queryset=Company.objects.all())
 
     class Meta:

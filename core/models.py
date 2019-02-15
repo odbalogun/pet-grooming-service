@@ -74,3 +74,5 @@ class Services(BaseModel):
     staff = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='services')
     name = models.CharField('group name', max_length=100)
     description = models.TextField('description')
+    duration = models.IntegerField('duration (in mins)', default=15)
+

@@ -17,11 +17,14 @@ from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path, re_path, include
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 
-schema_view = get_swagger_view(title='Appetments API')
+# schema_view = get_swagger_view(title='Appetments API')
+# schema_view = get_swagger_view(title='API Docs')
+#schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
 urlpatterns = [
-    url(r'docs/', schema_view),
     path('admin/', admin.site.urls),
     re_path(r'^', include('core.urls')),
     path('api-auth/', include('rest_framework.urls')),

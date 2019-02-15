@@ -126,42 +126,46 @@ class AddStaffToServiceView(APIView):
         # get parameters
         try:
             company = Company.objects.get(pk=request.user.company.pk)
-            service = Services.objects.get(pk=request.data.get("company"))
-            staff = User.objects.get(pk=request.data.get("staff"))
+            service = Services.objects.get(pk=request.data.get("service"))
         except ObjectDoesNotExist:
             return Response({"detail": "Invalid parameters. One or more parameters do not exist"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # check that service and staff belong to the company
-        if company.pk == service.company.pk == staff.company.pk:
-            # add to services
-            service.staff.add(staff)
-            # return response
-            return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
-        else:
-            return Response({"detail": "Invalid parameters. Objects do not belong to the same company"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        for st in request.data.getlist("staff"):
+            staff = User.objects.get(pk=st)
+            # check that service and staff belong to the company
+            if company.pk == service.company.pk == staff.company.pk:
+                # add to services
+                service.staff.add(staff)
+            else:
+                return Response({"detail": "Invalid parameters. Not all objects belong to the same company"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        # return response
+        return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
 
 
 class RemoveStaffFromServiceView(APIView):
     permission_classes = (custom_permissions.IsGroomer, custom_permissions.HasCompany)
 
     def post(self, request):
+        # get parameters
         try:
             company = Company.objects.get(pk=request.user.company.pk)
-            service = Services.objects.get(pk=request.data.get("company"))
-            staff = User.objects.get(pk=request.data.get("staff"))
+            service = Services.objects.get(pk=request.data.get("service"))
         except ObjectDoesNotExist:
             return Response({"detail": "Invalid parameters. One or more parameters do not exist"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # check that service and staff belong to the company
-        if company.pk == service.company.pk == staff.company.pk:
-            # remove from service
-            service.staff.remove(staff)
-            # return response
-            return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
-        else:
-            return Response({"detail": "Invalid parameters. Objects do not belong to the same company"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        for st in request.data.getlist("staff"):
+            staff = User.objects.get(pk=st)
+            # check that service and staff belong to the company
+            if company.pk == service.company.pk == staff.company.pk:
+                # remove from service
+                service.staff.remove(staff)
+                # return response
+                return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response({"detail": "Invalid parameters. Objects do not belong to the same company"},
+                                status=status.HTTP_400_BAD_REQUEST)
 

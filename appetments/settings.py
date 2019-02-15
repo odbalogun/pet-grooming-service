@@ -160,3 +160,14 @@ REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24
 
 # Configuration for CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}

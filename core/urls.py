@@ -1,10 +1,12 @@
 from django.urls import path, include
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
-from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+from rest_framework_swagger.views import get_swagger_view
 import core.views as views
 
 app_name = 'core'
+
+schema_view = get_swagger_view(title='API Docs')
 
 router = DefaultRouter()
 router.register('company', views.CompanyViewSet, base_name='company')
@@ -16,6 +18,7 @@ router.register('service-groups', views.ServiceGroupViewSet, base_name='service_
 router.register('services', views.ServiceViewSet, base_name='services')
 
 urlpatterns = [
+    url(r'^docs/', schema_view),
     path('users/', views.GroomerViewSet.as_view(), name="users"),
     # url(r'^', include(router.urls, "core"), namespace="core"),
     # path('company/', views.CompanyViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name='company'),

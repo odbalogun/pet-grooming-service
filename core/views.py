@@ -39,23 +39,6 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-'''
-class LoginView(APIView):
-    permission_classes = ()
-
-    def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
-
-        user = authenticate(username=username, password=password)
-
-        if user:
-            return Response({"auth_token": user.auth_token.key, "id": user.id})
-        else:
-            return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
-'''
-
-
 class CompanyViewSet(viewsets.ModelViewSet):
     """
     This is the company model

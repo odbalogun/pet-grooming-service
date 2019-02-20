@@ -65,6 +65,19 @@ class ProductVariants(BaseModel):
     quantity = models.IntegerField('quantity')
     retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
 
+    def add_inventory_history(self, description, action, quantity):
+        if action == 'sub':
+            quantity = - quantity
+
+        self.history.create(product_id=self.product_id, description=description, quantity=quantity)
+
+
+class ProductStockHistory(BaseModel):
+    product = models.ForeignKey(Products, related_name='history', on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariants, related_name='history', on_delete=models.CASCADE)
+    description = models.CharField('description', max_length=50)
+    quantity = models.IntegerField('quantity')
+
 
 class ServiceGroups(BaseModel):
     company = models.ForeignKey(Company, related_name='service_groups', on_delete=models.CASCADE)

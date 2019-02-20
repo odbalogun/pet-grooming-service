@@ -16,6 +16,7 @@ router.register('product-categories', views.ProductCategoryViewSet, base_name='p
 router.register('products', views.ProductViewSet, base_name='products')
 router.register('service-groups', views.ServiceGroupViewSet, base_name='service_groups')
 router.register('services', views.ServiceViewSet, base_name='services')
+router.register('product-variants', views.ProductVariantsViewSet, base_name='product_variants')
 
 urlpatterns = [
     url(r'^docs/', schema_view),

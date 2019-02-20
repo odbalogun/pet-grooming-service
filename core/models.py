@@ -32,6 +32,7 @@ class Company(BaseModel):
 
 class Locations(BaseModel):
     company = models.ForeignKey(Company, related_name='locations', on_delete=models.CASCADE)
+    staff = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='locations', blank=True)
     location_name = models.CharField('location name', max_length=100)
     contact_number = models.CharField('contact number', max_length=50)
     contact_email = models.CharField('contact email', max_length=50)

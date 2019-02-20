@@ -6,24 +6,6 @@ from .models import Company, Locations, ProductCategories, Products, ServiceGrou
 User = get_user_model()
 
 
-class LocationSerializer(serializers.ModelSerializer):
-    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
-                                                 queryset=Company.objects.all())
-
-    class Meta:
-        model = Locations
-        fields = '__all__'
-
-
-class CompanySerializer(serializers.ModelSerializer):
-    locations = LocationSerializer(many=True, read_only=True, required=False)
-    groomer = serializers.PrimaryKeyRelatedField(many=False, required=False, queryset=User.objects.all())
-
-    class Meta:
-        model = Company
-        fields = '__all__'
-
-
 class StaffSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
@@ -42,6 +24,25 @@ class StaffSerializer(serializers.ModelSerializer):
         # create user token for rest authentication
         Token.objects.create(user=user)
         return user
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+    staff = StaffSerializer(many=True, read_only=False, required=False)
+
+    class Meta:
+        model = Locations
+        fields = '__all__'
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    locations = LocationSerializer(many=True, read_only=True, required=False)
+    groomer = serializers.PrimaryKeyRelatedField(many=False, required=False, queryset=User.objects.all())
+
+    class Meta:
+        model = Company
+        fields = '__all__'
 
 
 class GroomerSerializer(serializers.ModelSerializer):

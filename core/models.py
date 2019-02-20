@@ -44,25 +44,30 @@ class Locations(BaseModel):
 
 class ProductCategories(BaseModel):
     company = models.ForeignKey(Company, related_name='product_brands', on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     category_name = models.CharField('category name', max_length=50)
 
 
 class Products(BaseModel):
     company = models.ForeignKey(Company, related_name='products', on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(ProductCategories, related_name='products', on_delete=models.CASCADE)
-    barcode = models.CharField('barcode', max_length=50)
+    barcode = models.CharField('barcode', max_length=50, null=True)
     name = models.CharField('product name', max_length=100)
-    sku = models.CharField('sku', max_length=100)
+    sku = models.CharField('sku', max_length=100, null=True)
     description = models.TextField('description')
     retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
-    discount_price = MoneyField('discount price', null=True, max_digits=10, decimal_places=2, default_currency='USD')
+
+
+class ProductVariants(BaseModel):
+    product = models.ForeignKey(Products, related_name='variants', on_delete=models.CASCADE)
+    name = models.CharField('product name', max_length=100)
+    barcode = models.CharField('barcode', max_length=50)
+    sku = models.CharField('sku', max_length=100)
+    quantity = models.IntegerField('quantity')
+    retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
 
 
 class ServiceGroups(BaseModel):
     company = models.ForeignKey(Company, related_name='service_groups', on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     appointment_color = models.CharField('appointment color', max_length=50)
     name = models.CharField('group name', max_length=100)
     description = models.TextField('description')
@@ -71,7 +76,6 @@ class ServiceGroups(BaseModel):
 class Services(BaseModel):
     company = models.ForeignKey(Company, related_name='services', on_delete=models.CASCADE)
     group = models.ForeignKey(ServiceGroups, related_name='services', on_delete=models.CASCADE)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_services', null=True, on_delete=models.SET_NULL)
     staff = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='services', blank=True)
     name = models.CharField('name', max_length=100)
     description = models.TextField('description')

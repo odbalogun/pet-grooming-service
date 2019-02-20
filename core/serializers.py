@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Company, Locations, ProductCategories, Products, ServiceGroups, Services
+from .models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants
 
 User = get_user_model()
 
@@ -24,6 +24,17 @@ class StaffSerializer(serializers.ModelSerializer):
         # create user token for rest authentication
         Token.objects.create(user=user)
         return user
+
+    def update(self, instance, validated_data):
+        fields = instance._meta.fields
+        exclude = ['company', 'password', 'email']
+        for field in fields:
+            field = field.name.split('.')[-1]  # to get column name
+            if field in exclude:
+                continue
+            exec("instance.%s = validated_data.get(field, instance.%s)" % (field, field))
+        instance.save()
+        return instance
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -77,11 +88,21 @@ class ProductCategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductVariantSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Products.objects.all())
+
+    class Meta:
+        model = ProductVariants
+        fields = ('id', 'name', 'quantity', 'retail_price', 'product')
+
+
 class ProductSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
+    variants = ProductVariantSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = Products

@@ -9,10 +9,11 @@ User = get_user_model()
 class StaffSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
+    company_name = serializers.StringRelatedField(many=False, read_only=True, source='company')
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'company')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password', 'company', 'company_name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -40,6 +41,7 @@ class StaffSerializer(serializers.ModelSerializer):
 class LocationSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Company.objects.all())
+    company_name = serializers.StringRelatedField(many=False, read_only=True, source='company')
     staff = StaffSerializer(many=True, read_only=False, required=False)
 
     class Meta:
@@ -49,7 +51,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
-    groomer = serializers.PrimaryKeyRelatedField(many=False, required=False, queryset=User.objects.all())
+    groomer = StaffSerializer(many=False, read_only=True)
 
     class Meta:
         model = Company

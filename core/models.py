@@ -20,6 +20,7 @@ class Company(BaseModel):
     website = models.CharField('website', max_length=100, null=True)
     contact_number = models.CharField('contact number', max_length=50, null=True)
     time_zone = models.CharField('time zone', max_length=100, null=True)
+    time_slot_interval = models.IntegerField('time slot interval', default=15)
     country = models.CharField('country', max_length=100, null=True)
     groomer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="store", null=True, on_delete=models.CASCADE)
 
@@ -93,4 +94,9 @@ class Services(BaseModel):
     name = models.CharField('name', max_length=100)
     description = models.TextField('description')
     duration = models.IntegerField('duration (in mins)', default=15)
+
+
+class DatesClosed(BaseModel):
+    company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)
+    closed_date = models.DateField('date closed', null=False)
 

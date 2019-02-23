@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from .models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants
+from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants
+from .info_serializers import DatesClosedSerializer
 
 User = get_user_model()
 
@@ -52,6 +53,7 @@ class LocationSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
     groomer = StaffSerializer(many=False, read_only=True)
+    dates_closed = DatesClosedSerializer(many=True, read_only=True)
 
     class Meta:
         model = Company

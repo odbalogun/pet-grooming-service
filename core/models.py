@@ -23,6 +23,9 @@ class Company(BaseModel):
     time_zone = models.CharField('time zone', max_length=100, null=True)
     time_slot_interval = models.IntegerField('time slot interval', default=15)
     country = models.CharField('country', max_length=100, null=True)
+    hours_bookable_in_advance = models.IntegerField('min hours bookable in advance', default=3)
+    max_day_bookable_in_advance = models.IntegerField('max days bookable in advance', default=10)
+    cancellation_limit = models.IntegerField('max_hours_to_cancellation', default=3)
     groomer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="store", null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):

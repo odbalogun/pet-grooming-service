@@ -28,9 +28,12 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
                 token.save()
 
             if token.user.company:
-                return Response({"auth_token": token.key, "company": token.user.company.company_name, "id": token.user.id})
+                return Response({"auth_token": token.key, "company": token.user.company.company_name,
+                                 "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS),
+                                 "id": token.user.id})
             else:
-                return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id})
+                return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id,
+                                 'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)})
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 

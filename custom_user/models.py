@@ -17,6 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_groomer = models.BooleanField('is groomer', default=False)
     is_staff = models.BooleanField('is staff', default=True)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='staff', null=True)
+    delete_status = models.BooleanField('deleted', default=False)
 
     objects = UserManager()
 

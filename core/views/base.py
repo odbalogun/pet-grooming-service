@@ -7,7 +7,7 @@ class CustomModelViewSet(viewsets.ModelViewSet):
     permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(company=self.request.user.company.pk)
+        queryset = self.queryset.filter(company=self.request.user.company.pk, delete_status=False)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -21,3 +21,12 @@ class CustomModelViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if hasattr(obj, 'delete_status'):
+            obj.delete_status = True
+            obj.save()
+            return Response({"detail": "Success"}, status=status.HTTP_200_OK)
+        self.perform_destroy(obj)
+        return Response({"detail": "Success"}, status=status.HTTP_200_OK)

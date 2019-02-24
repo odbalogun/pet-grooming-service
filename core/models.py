@@ -110,7 +110,7 @@ class DatesClosed(BaseModel):
 
 
 class AutoNotifications(BaseModel):
-    company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, related_name='auto_notifications', on_delete=models.CASCADE)
     name = models.CharField('name', max_length=100)
     subject = models.CharField('email subject', max_length=100)
     message = models.TextField('message')

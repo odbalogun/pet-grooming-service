@@ -1,6 +1,7 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.conf import settings
+import datetime
 
 
 class BaseModel(models.Model):
@@ -26,7 +27,9 @@ class Company(BaseModel):
     country = models.CharField('country', max_length=100, null=True)
     hours_bookable_in_advance = models.IntegerField('min hours bookable in advance', default=3)
     max_day_bookable_in_advance = models.IntegerField('max days bookable in advance', default=10)
-    cancellation_limit = models.IntegerField('max_hours_to_cancellation', default=3)
+    cancellation_limit = models.IntegerField('max hours to cancellation', default=3)
+    opening_time = models.TimeField('daily opening time', default=datetime.time(9, 00))
+    closing_time = models.TimeField('daily closing time', default=datetime.time(17, 00))
     groomer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="store", null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):

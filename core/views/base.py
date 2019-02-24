@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 import core.permissions as custom_permissions
+from rest_framework.decorators import action
 
 
 class CustomModelViewSet(viewsets.ModelViewSet):
@@ -29,4 +30,18 @@ class CustomModelViewSet(viewsets.ModelViewSet):
             obj.save()
             return Response({"detail": "Success"}, status=status.HTTP_200_OK)
         self.perform_destroy(obj)
+        return Response({"detail": "Success"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['POST'])
+    def activate(self, request, pk=None):
+        obj = self.get_object()
+        obj.is_active = True
+        obj.save()
+        return Response({"detail": "Success"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['POST'])
+    def deactivate(self, request, pk=None):
+        obj = self.get_object()
+        obj.is_active = False
+        obj.save()
         return Response({"detail": "Success"}, status=status.HTTP_200_OK)

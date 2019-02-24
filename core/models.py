@@ -108,3 +108,12 @@ class DatesClosed(BaseModel):
     company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)
     closed_date = models.DateField('date closed', null=False)
 
+
+class AutoNotifications(BaseModel):
+    company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)
+    name = models.CharField('name', max_length=100)
+    subject = models.CharField('email subject', max_length=100)
+    message = models.TextField('message')
+    sent_before = models.BooleanField('sent before appointment', default=True)
+    minutes = models.IntegerField('minutes before/after appointment', default=15)
+

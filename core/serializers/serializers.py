@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, AutoNotifications
+from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
+    AutoNotifications, Customers, CustomerPets
 from .info_serializers import DatesClosedSerializer
 
 User = get_user_model()
@@ -140,4 +141,22 @@ class AutoNotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AutoNotifications
+        fields = '__all__'
+
+
+class CustomerPetSerializer(serializers.ModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                               queryset=Customers.objects.all())
+
+    class Meta:
+        model = CustomerPets
+        fields = '__all__'
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
+                                                 queryset=Company.objects.all())
+
+    class Meta:
+        model = Customers
         fields = '__all__'

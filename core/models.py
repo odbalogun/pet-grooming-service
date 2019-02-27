@@ -117,3 +117,21 @@ class AutoNotifications(BaseModel):
     sent_before = models.BooleanField('sent before appointment', default=True)
     minutes = models.IntegerField('minutes before/after appointment', default=15)
 
+
+class Customers(BaseModel):
+    company = models.ForeignKey(Company, related_name='clients', on_delete=models.CASCADE)
+    first_name = models.CharField('first name', max_length=100)
+    last_name = models.CharField('last name', max_length=100)
+    customer_code = models.CharField('customer', max_length=50)
+    email = models.CharField('email', max_length=100)
+    phone_number = models.CharField('phone number', max_length=50)
+
+    @property
+    def full_name(self):
+        return "{} {}".format(self.first_name, self.last_name)
+
+
+class CustomerPets(BaseModel):
+    owner = models.ForeignKey(Customers, related_name='pets', on_delete=models.CASCADE)
+    name = models.CharField('name', max_length=50)
+    pet_type = models.CharField('type', max_length=50)

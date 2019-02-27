@@ -18,6 +18,7 @@ router.register('service-groups', views.ServiceGroupViewSet, base_name='service_
 router.register('services', views.ServiceViewSet, base_name='services')
 router.register('product-variants', views.ProductVariantsViewSet, base_name='product_variants')
 router.register('auto-notifications', views.AutoNotificationViewSet, base_name='auto_notifications')
+router.register('customers', views.CustomerViewSet, base_name='customers')
 
 urlpatterns = [
     url(r'^docs/', schema_view),

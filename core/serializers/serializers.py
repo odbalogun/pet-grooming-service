@@ -154,8 +154,8 @@ class CustomerPetSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
-                                                 queryset=Company.objects.all())
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    pets = CustomerPetSerializer(many=True, read_only=True)
 
     class Meta:
         model = Customers

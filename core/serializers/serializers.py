@@ -160,3 +160,12 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customers
         fields = '__all__'
+        extra_kwargs = {'customer_code': {'read_only': True}}
+
+    def create(self, validated_data):
+        customer = Customers(email=validated_data['email'], first_name=validated_data['first_name'],
+                             last_name=validated_data['last_name'], company=validated_data['company'],
+                             phone_number=validated_data['phone_number'])
+        customer.generate_code()
+        customer.save()
+        return customer

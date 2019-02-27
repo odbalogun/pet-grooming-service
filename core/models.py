@@ -2,7 +2,8 @@ from django.db import models
 from djmoney.models.fields import MoneyField
 from django.conf import settings
 import datetime
-
+import random
+import string
 
 class BaseModel(models.Model):
     """
@@ -129,6 +130,12 @@ class Customers(BaseModel):
     @property
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)
+
+    def generate_code(self, size=5):
+        code = ''.join(random.choice(string.ascii_letters[26:] + string.digits) for i in range(size))
+        if Customers.objects.filter(customer_code=code).exists():
+            self.generate_code()
+        self.customer_code = code
 
 
 class CustomerPets(BaseModel):

@@ -33,6 +33,7 @@ class CustomerViewSet(CustomModelViewSet):
 
         if not Customers.objects.filter(company=data["company"], email=data["email"]).exists():
             serializer = self.get_serializer(data=data)
+            print(serializer.initial_data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
 

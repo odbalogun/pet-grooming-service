@@ -159,7 +159,7 @@ class CustomerPetSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    company = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Company.objects.all())
     pets = CustomerPetSerializer(many=True, read_only=True)
 
     class Meta:
@@ -168,6 +168,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         extra_kwargs = {'customer_code': {'read_only': True}}
 
     def create(self, validated_data):
+        print("from serializer:")
+        print(validated_data)
         customer = Customers(email=validated_data['email'], first_name=validated_data['first_name'],
                              last_name=validated_data['last_name'], company=validated_data['company'],
                              phone_number=validated_data['phone_number'])

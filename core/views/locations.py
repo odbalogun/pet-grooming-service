@@ -26,7 +26,10 @@ class LocationViewSet(CustomModelViewSet):
         if location.company != request.user.company:
             return Response({"detail": "Location does not belong to User's company"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(location.staff.all(), status=status.HTTP_200_OK)
+        data = []
+        for x in location.staff.all():
+            data.append(x.to_json())
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def add_staff(self, request, pk=None):

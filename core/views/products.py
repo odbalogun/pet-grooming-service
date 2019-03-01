@@ -17,7 +17,10 @@ class ProductViewSet(CustomModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def variants(self, request, pk=None):
-        return Response(self.get_object().variants.all(), status=status.HTTP_200_OK)
+        data = []
+        for x in self.get_object().variants.all():
+            data.append(x.to_json())
+        return Response(data, status=status.HTTP_200_OK)
 
     @variants.mapping.post
     def create_variant(self, request, pk=None):

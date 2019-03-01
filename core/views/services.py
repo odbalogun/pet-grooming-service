@@ -62,5 +62,4 @@ class RemoveStaffFromServiceView(APIView):
             # add to services
             service.staff.add(staff)
             service.save()
-
         return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)

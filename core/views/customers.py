@@ -12,7 +12,10 @@ class CustomerViewSet(CustomModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def pets(self, request, pk=None):
-        return Response(self.get_object().pets.all(), status=status.HTTP_200_OK)
+        data = []
+        for x in self.get_object().pets.all():
+            data.append(x.to_json())
+        return Response(data, status=status.HTTP_200_OK)
 
     @pets.mapping.post
     def create_pet(self, request, pk=None):

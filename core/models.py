@@ -4,6 +4,8 @@ from django.conf import settings
 import datetime
 import random
 import string
+from django.core.serializers.json import DjangoJSONEncoder
+
 
 class BaseModel(models.Model):
     """
@@ -81,6 +83,16 @@ class ProductVariants(BaseModel):
 
         self.history.create(product_id=self.product_id, description=description, quantity=quantity)
 
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "name": self.name,
+            "barcode": self.barcode,
+            "sku": self.sku,
+            "quantity": self.quantity,
+            "retail_price": self.retail_price.amount
+        }
+
 
 class ProductStockHistory(BaseModel):
     product = models.ForeignKey(Products, related_name='history', on_delete=models.CASCADE)
@@ -143,6 +155,13 @@ class CustomerPets(BaseModel):
     owner = models.ForeignKey(Customers, related_name='pets', on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
     pet_type = models.CharField('type', max_length=50)
+
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "name": self.name,
+            "pet_type": self.pet_type
+        }
 
 
 class Bookings(BaseModel):

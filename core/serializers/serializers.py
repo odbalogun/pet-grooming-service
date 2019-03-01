@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets
+    AutoNotifications, Customers, CustomerPets, Bookings, BookingProducts, BookingPets, BookingServices
 from .info_serializers import DatesClosedSerializer
 
 User = get_user_model()
@@ -95,7 +95,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
-                                                 queryset=Products.objects.all())
+                                                 queryset=Products.objects.filter(delete_status=False).all())
 
     class Meta:
         model = ProductVariants
@@ -169,3 +169,20 @@ class CustomerSerializer(serializers.ModelSerializer):
         customer.generate_code()
         customer.save()
         return customer
+
+
+class BookingServiceSerializer(serializers.ModelSerializer):
+    booking = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Bookings.objects.all())
+    service = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Services.objects.all())
+    pet = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=BookingPets.objects.all())
+
+    class Meta:
+        model = BookingServices
+        fields = '__all__'
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    services = BookingServiceSerializer(many=True, read_only=False)
+    class Meta:
+        model = Bookings
+        fields = '__all__'

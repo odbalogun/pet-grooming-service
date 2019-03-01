@@ -19,7 +19,8 @@ class ProductViewSet(CustomModelViewSet):
     def variants(self, request, pk=None):
         data = []
         for x in self.get_object().variants.all():
-            data.append(x.to_json())
+            if not x.delete_status:
+                data.append(x.to_json())
         return Response(data, status=status.HTTP_200_OK)
 
     @variants.mapping.post

@@ -103,6 +103,7 @@ class Services(BaseModel):
     name = models.CharField('name', max_length=100)
     description = models.TextField('description')
     duration = models.IntegerField('duration (in mins)', default=15)
+    price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
 
 
 class DatesClosed(BaseModel):
@@ -142,3 +143,32 @@ class CustomerPets(BaseModel):
     owner = models.ForeignKey(Customers, related_name='pets', on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
     pet_type = models.CharField('type', max_length=50)
+
+
+class Bookings(BaseModel):
+    company = models.ForeignKey(Company, related_name='bookings', on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customers, related_name='bookings', on_delete=models.SET_NULL, null=True)
+    start_time = models.DateTimeField('start time')
+    end_time = models.DateTimeField('end time')
+    total_duration = models.IntegerField('total duration')
+    total_price = MoneyField('total price', max_digits=10, decimal_places=2, default_currency='USD')
+    status = models.CharField('status', default='booked', max_length=50)
+    payment_status = models.CharField('payment status', default='pending', max_length=50)
+    payment_reference = models.CharField('payment reference', null=True, max_length=100)
+
+
+class BookingPets(BaseModel):
+    booking = models.ForeignKey(Bookings, related_name='pets', on_delete=models.SET_NULL, null=True)
+    pet = models.ForeignKey(CustomerPets, on_delete=models.SET_NULL, null=True)
+
+
+class BookingServices(BaseModel):
+    booking = models.ForeignKey(Bookings, related_name='services', on_delete=models.SET_NULL, null=True)
+    pet = models.ForeignKey(BookingPets, related_name='services', on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
+
+
+class BookingProducts(BaseModel):
+    booking = models.ForeignKey(Bookings, related_name='products', on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
+    variant = models.ForeignKey(ProductVariants, on_delete=models.SET_NULL, null=True)

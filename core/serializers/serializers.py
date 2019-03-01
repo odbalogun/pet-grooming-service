@@ -176,8 +176,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         return customer
 
 
-"""
-
 class OrderServiceSerializer(serializers.ModelSerializer):
     order = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Orders.objects.all())
     service = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Services.objects.all())
@@ -208,4 +206,17 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = '__all__'
-"""
+
+    def create(self, validated_data):
+        # save product
+        products = validated_data.pop('products')
+        services = validated_data.pop('services')
+
+        order = Orders.objects.create(**validated_data)
+        for product in products:
+            OrderProducts.objects.create(order=order, **product)
+
+        for service in services:
+            OrderServices.objects.create(order=order, **service)
+
+        return order

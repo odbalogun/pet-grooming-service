@@ -95,7 +95,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
-                                                 queryset=Products.objects.filter(delete_status=False).all())
+                                                 queryset=Products.objects.filter().all())
 
     class Meta:
         model = ProductVariants
@@ -107,7 +107,12 @@ class ProductSerializer(serializers.ModelSerializer):
                                                  queryset=Company.objects.all())
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
-    variants = ProductVariantSerializer(many=True, read_only=True, required=False)
+    variants = serializers.SerializerMethodField()
+
+    def get_variants(self, product):
+        qs = ProductVariants.objects.filter(delete_status=False, product=product).all()
+        serializer = ProductVariantSerializer(instance=qs, many=True)
+        return serializer.data
 
     class Meta:
         model = Products

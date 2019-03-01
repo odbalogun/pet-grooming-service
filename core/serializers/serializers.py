@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets, Bookings, BookingProducts, BookingPets, BookingServices
+    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderPets, OrderServices
 from .info_serializers import DatesClosedSerializer
 
 User = get_user_model()
@@ -176,18 +176,36 @@ class CustomerSerializer(serializers.ModelSerializer):
         return customer
 
 
-class BookingServiceSerializer(serializers.ModelSerializer):
-    booking = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Bookings.objects.all())
+"""
+
+class OrderServiceSerializer(serializers.ModelSerializer):
+    order = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Orders.objects.all())
     service = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Services.objects.all())
-    pet = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=BookingPets.objects.all())
+    pet = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=OrderPets.objects.all())
 
     class Meta:
-        model = BookingServices
+        model = OrderServices
         fields = '__all__'
 
 
-class BookingSerializer(serializers.ModelSerializer):
-    services = BookingServiceSerializer(many=True, read_only=False)
+class OrderPetSerializer(serializers.ModelSerializer):
+    services = OrderServiceSerializer(many=True, read_only=False, required=True)
+
     class Meta:
-        model = Bookings
+        model = OrderPets
         fields = '__all__'
+
+
+class OrderProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderProducts
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    pets = OrderPetSerializer(many=True, read_only=False, required=False)
+
+    class Meta:
+        model = Orders
+        fields = '__all__'
+"""

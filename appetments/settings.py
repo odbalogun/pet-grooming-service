@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     # for money fields
     'djmoney',
+    'mailqueue'
 ]
 
 MIDDLEWARE = [
@@ -133,7 +134,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -171,3 +172,7 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+# MAIL QUEUE SETTINGS
+MAILQUEUE_CELERY = True
+MAILQUEUE_QUEUE_UP = True

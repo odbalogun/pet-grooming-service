@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
     AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderPets, OrderServices
 from .info_serializers import DatesClosedSerializer
+from util.mail import send_mail
 
 User = get_user_model()
 
@@ -81,6 +82,9 @@ class GroomerSerializer(serializers.ModelSerializer):
 
         # create user token for rest authentication
         Token.objects.create(user=user)
+
+        # send email
+        send_mail("Welcome to Appetments!", "Thank you for signing up to Appetments!", user.email)
         return user
 
 

@@ -3,7 +3,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
     AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderPets, OrderServices
-from .info_serializers import DatesClosedSerializer
+from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util.mail import send_mail
 
 User = get_user_model()
@@ -56,6 +56,7 @@ class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
     groomer = StaffSerializer(many=False, read_only=True)
     dates_closed = DatesClosedSerializer(many=True, read_only=True)
+    days_off = DaysOffSerializer(many=True, read_only=True)
 
     class Meta:
         model = Company
@@ -172,8 +173,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         extra_kwargs = {'customer_code': {'read_only': True}}
 
     def create(self, validated_data):
-        print("from serializer:")
-        print(validated_data)
         customer = Customers(email=validated_data['email'], first_name=validated_data['first_name'],
                              last_name=validated_data['last_name'], company=validated_data['company'],
                              phone_number=validated_data['phone_number'])

@@ -4,7 +4,6 @@ from django.conf import settings
 import datetime
 import random
 import string
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 class BaseModel(models.Model):
@@ -118,9 +117,26 @@ class Services(BaseModel):
     price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
 
 
-class DatesClosed(BaseModel):
+class DatesClosed(models.Model):
     company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)
     closed_date = models.DateField('date closed', null=False)
+
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "name": self.closed_date
+        }
+
+
+class DaysOff(models.Model):
+    company = models.ForeignKey(Company, related_name='days_off', on_delete=models.CASCADE)
+    day = models.CharField('day', null=False, max_length=20)
+
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "day": self.day
+        }
 
 
 class AutoNotifications(BaseModel):

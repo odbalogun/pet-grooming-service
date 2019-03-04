@@ -1,7 +1,7 @@
 from rest_framework import status, viewsets, permissions
 from core.serializers import CompanySerializer
-from core.serializers.info_serializers import DatesClosedSerializer
-from core.models import Company, DatesClosed
+from core.serializers.info_serializers import DatesClosedSerializer, DaysOffSerializer
+from core.models import Company, DatesClosed, DaysOff
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.core import serializers
@@ -38,7 +38,10 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["GET"])
     def closed_dates(self, request, pk=None):
-        return Response(self.get_object().closed_dates.all(), status=status.HTTP_200_OK)
+        data = []
+        for x in self.get_object().closed_dates.all():
+            data.append(x.to_json())
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["POST"])
     def add_closed_date(self, request, pk=None):
@@ -55,5 +58,30 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
         closed = DatesClosed.objects.filter(closed_date=date_var, company=request.user.company).all()
         self.get_object().closed_dates.remove(closed)
+
+        return Response({"detail": "Success"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["GET"])
+    def days_off(self, request, pk=None):
+        data = []
+        for x in self.get_object().days_off.all():
+            data.append(x.to_json())
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["POST"])
+    def add_day_off(self, request, pk=None):
+        day = request.data.get("day")
+
+        # check if already there
+        off_day = DaysOff.objects.get_or_create(day=day, company=request.user.company)[0]
+
+        return Response(DaysOffSerializer(off_day).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["POST"])
+    def remove_day_off(self, request, pk=None):
+        date_var = request.data.get("day")
+
+        off_day = DaysOff.objects.filter(day=date_var, company=request.user.company).all()
+        self.get_object().days_off.remove(off_day)
 
         return Response({"detail": "Success"}, status=status.HTTP_200_OK)

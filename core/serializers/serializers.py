@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
     AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderPets, OrderServices
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
-from util.mail import send_mail
+from util import send_mail
 
 User = get_user_model()
 
@@ -78,14 +78,18 @@ class GroomerSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
 
         user.is_groomer = True
+        user.is_active = False
         user.set_password(validated_data['password'])
+        user.generate_activation_key()
         user.save()
 
         # create user token for rest authentication
         Token.objects.create(user=user)
 
         # send email
-        send_mail("Welcome to Appetments!", "Thank you for signing up to Appetments!", user.email)
+        send_mail("Welcome to Appetments!", "Thank you for signing up to Appetments! Follow the <a href='http://"
+                                            "localhost:8000/verify-email?token={}'>link</a> to verify your account".
+                  format(user.activation_key), user.email)
         return user
 
 

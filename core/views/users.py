@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from rest_framework import status, generics
+from rest_framework.decorators import action
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -30,19 +31,96 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
             if token.user.company:
                 return Response({"auth_token": token.key, "company": token.user.company.company_name,
                                  "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS),
-                                 "id": token.user.id})
+                                 "id": token.user.id}, status=status.HTTP_200_OK)
             else:
                 return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id,
-                                 'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)})
+                                 'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)},
+                                status=status.HTTP_200_OK)
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GroomerViewSet(generics.ListCreateAPIView):
+class GroomerViewSet(CustomModelViewSet):
     # disable authentication & permission checks so users can signup
     serializer_class = GroomerSerializer
     authentication_classes = ()
     permission_classes = ()
     queryset = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['POST'])
+    def verify_email(self, request):
+        # get token
+        token = request.data.get('token')
+        # if no token return error
+        if not token:
+            return Response({"detail": "No token provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # fetch user
+        user = User.objects.filter(activation_key=token).first()
+
+        # if no user return error
+        if not user:
+            return Response({"detail": "No user found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # check if expired
+        if datetime.datetime.now() > user.key_expires:
+            return Response({"detail": "Verification code has expired. Please request another"},
+                            status=status.HTTP_410_GONE)
+
+        # else activate
+        user.is_active = True
+        user.save()
+
+        # log user in
+        token, created = Token.objects.get_or_create(user=user)
+        if not created and token.created < timezone.now() - datetime.timedelta(hours=EXPIRE_HOURS):
+            token.delete()
+            token = Token.objects.create(user=user)
+            token.created = datetime.datetime.utcnow()
+            token.save()
+
+        if token.user.company:
+            return Response({"auth_token": token.key, "company": token.user.company.company_name,
+                             "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS),
+                             "id": token.user.id}, status=status.HTTP_200_OK)
+        else:
+            return Response({"auth_token": token.key, "company": token.user.company, "id": token.user.id,
+                             'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)},
+                            status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'])
+    def resend_verification_email(self, request):
+        # get email
+        email = request.data.get("email")
+
+        if not email:
+            return Response({"detail": "No email provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # get user by email
+        user = User.objects.filter(email=email).first()
+
+        # if no user return error
+        if not user:
+            return Response({"detail": "No user found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # check if user has already been activated
+        if user.is_active:
+            return Response({"detail": "User has already been verified"}, status=status.HTTP_200_OK)
+
+        # else regenerate activation key
+        user.generate_activation_key()
+        user.save()
+
+        # send email
+        user.email_user("Welcome to Appetments!", "Thank you for signing up to Appetments! Follow the <a href='http://"
+                                                  "localhost:8000/verify-email?token={}'>link</a> to verify your "
+                                                  "account".format(user.activation_key))
+        return Response({"detail": "Verification email has been sent"}, status=status.HTTP_200_OK)
 
 
 class StaffViewSet(CustomModelViewSet):

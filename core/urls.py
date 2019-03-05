@@ -20,10 +20,10 @@ router.register('product-variants', views.ProductVariantsViewSet, base_name='pro
 router.register('auto-notifications', views.AutoNotificationViewSet, base_name='auto_notifications')
 router.register('customers', views.CustomerViewSet, base_name='customers')
 router.register('orders', views.OrderViewSet, base_name='orders')
+router.register('users', views.GroomerViewSet, base_name='users')
 
 urlpatterns = [
     url(r'^docs/', schema_view),
-    path('users/', views.GroomerViewSet.as_view(), name="users"),
     # url(r'^', include(router.urls, "core"), namespace="core"),
     # path('company/', views.CompanyViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name='company'),
     path('login/', views.ObtainExpiringAuthToken.as_view(), name="login"),

@@ -1,11 +1,12 @@
 from django.db import models
-from django.core.mail import send_mail
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from core.models import Company
-
+from util import random_string, send_mail
 
 from .managers import UserManager
+import datetime
+import hashlib
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -18,6 +19,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField('is staff', default=True)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='staff', null=True)
     delete_status = models.BooleanField('deleted', default=False)
+    activation_key = models.CharField(max_length=100, null=True)
+    key_expires = models.DateTimeField(null=True)
 
     objects = UserManager()
 
@@ -45,4 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Sends an email to this User.
         """
-        send_mail(subject, message, from_email, [self.email], **kwargs)
+        send_mail(subject=subject, message=message, to=self.email)
+
+    def generate_activation_key(self):
+        self.activation_key = hashlib.sha512("{}{}".format(self.email, random_string(10)).encode("utf8")).hexdigest()
+        self.key_expires = datetime.datetime.strftime(datetime.datetime.now() + datetime.timedelta(days=1), "%Y-%m-%d %H:%M:%S")

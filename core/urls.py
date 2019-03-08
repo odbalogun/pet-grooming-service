@@ -21,6 +21,7 @@ router.register('auto-notifications', views.AutoNotificationViewSet, base_name='
 router.register('customers', views.CustomerViewSet, base_name='customers')
 router.register('orders', views.OrderViewSet, base_name='orders')
 router.register('users', views.GroomerViewSet, base_name='users')
+router.register('pets', views.PetViewSet, base_name='pets')
 
 urlpatterns = [
     url(r'^docs/', schema_view),

@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from core.views.base import CustomModelViewSet
 from core.serializers import CustomerSerializer, CustomerPetSerializer
-from core.models import Customers
+from core.models import Customers, CustomerPets
 
 
 class CustomerViewSet(CustomModelViewSet):
@@ -14,7 +14,8 @@ class CustomerViewSet(CustomModelViewSet):
     def pets(self, request, pk=None):
         data = []
         for x in self.get_object().pets.all():
-            data.append(x.to_json())
+            if not x.delete_status:
+                data.append(x.to_json())
         return Response(data, status=status.HTTP_200_OK)
 
     @pets.mapping.post
@@ -39,3 +40,11 @@ class CustomerViewSet(CustomModelViewSet):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'This customer already exists'}, status=status.HTTP_409_CONFLICT)
+
+
+class PetViewSet(CustomModelViewSet):
+    queryset = CustomerPets.objects.all()
+    serializer_class = CustomerPetSerializer
+
+    def create(self, request, *args, **kwargs):
+        return Response({"detail": "This operation is not allowed"}, status=status.HTTP_403_FORBIDDEN)

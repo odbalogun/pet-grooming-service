@@ -21,6 +21,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     delete_status = models.BooleanField('deleted', default=False)
     activation_key = models.CharField(max_length=100, null=True)
     key_expires = models.DateTimeField(null=True)
+    password_reset_key = models.CharField(max_length=100, null=True)
+    password_key_expires = models.DateTimeField(null=True)
 
     objects = UserManager()
 
@@ -53,3 +55,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def generate_activation_key(self):
         self.activation_key = hashlib.sha512("{}{}".format(self.email, random_string(10)).encode("utf8")).hexdigest()
         self.key_expires = datetime.datetime.strftime(datetime.datetime.now() + datetime.timedelta(days=1), "%Y-%m-%d %H:%M:%S")
+
+    def generate_password_request_key(self):
+        self.password_reset_key = hashlib.sha512("{}{}".format(self.email, random_string(10)).encode("utf8"))\
+            .hexdigest()
+        self.password_key_expires = datetime.datetime.strftime(datetime.datetime.now() + datetime.timedelta(days=1),
+                                                               "%Y-%m-%d %H:%M:%S")

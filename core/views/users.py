@@ -122,6 +122,57 @@ class GroomerViewSet(CustomModelViewSet):
                                                   "account".format(user.activation_key))
         return Response({"detail": "Verification email has been sent"}, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['POST'])
+    def request_password_reset(self, request):
+        # get email
+        email = request.data.get("email")
+
+        if not email:
+            return Response({"detail": "No email provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # get user by email
+        user = User.objects.filter(email=email).first()
+
+        # if no user return error
+        if not user:
+            return Response({"detail": "No user found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # generate password reset
+        user.generate_password_request_key()
+        user.save()
+
+        user.email_user("Password Reset Request", "You requested a password reset. Please use the <a href='http://local"
+                                                  "host:8000/verify-email?token={}'>link</a> to do so"
+                        .format(user.password_reset_key))
+        return Response({"detail": "Password request email has been sent"}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'])
+    def reset_password(self, request):
+        # get details
+        token = request.data.get("token")
+        password = request.data.get("password")
+        confirm_password = request.data.get("confirm_password")
+
+        if not token:
+            return Response({"detail": "Please provide a token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # fetch user
+        user = User.objects.filter(password_reset_key=token).first()
+
+        if not user:
+            return Response({"detail": "No user found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if not password or not confirm_password:
+            return Response({"detail": "Invalid parameters. No password or confirm_password"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if password != confirm_password:
+            return Response({"detail": "Password not equal to confirm_password"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(password)
+        user.save()
+        return Response({"detail": "Password has been successfully reset"}, status=status.HTTP_200_OK)
+
 
 class StaffViewSet(CustomModelViewSet):
     queryset = User.objects.all()

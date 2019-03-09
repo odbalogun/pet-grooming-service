@@ -184,26 +184,33 @@ class Orders(BaseModel):
     company = models.ForeignKey(Company, related_name='orders', on_delete=models.CASCADE)
     customer = models.ForeignKey(Customers, related_name='orders', on_delete=models.SET_NULL, null=True)
     start_time = models.DateTimeField('start time')
-    end_time = models.DateTimeField('end time')
-    total_duration = models.IntegerField('total duration')
+    end_time = models.DateTimeField('end time', null=True)
+    total_duration = models.IntegerField('total duration', null=True)
     total_price = MoneyField('total price', max_digits=10, decimal_places=2, default_currency='USD')
     status = models.CharField('status', default='booked', max_length=50)
+    note = models.TextField('booking note', null=True)
     payment_status = models.CharField('payment status', default='pending', max_length=50)
     payment_reference = models.CharField('payment reference', null=True, max_length=100)
 
 
-class OrderPets(BaseModel):
-    booking = models.ForeignKey(Orders, related_name='pets', on_delete=models.SET_NULL, null=True)
-    pet = models.ForeignKey(CustomerPets, on_delete=models.SET_NULL, null=True)
-
-
 class OrderServices(BaseModel):
     booking = models.ForeignKey(Orders, related_name='services', on_delete=models.SET_NULL, null=True)
-    pet = models.ForeignKey(OrderPets, related_name='services', on_delete=models.SET_NULL, null=True)
+    pet = models.ForeignKey(CustomerPets, related_name='services', on_delete=models.SET_NULL, null=True)
     service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
+    price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
+    start_time = models.DateTimeField('start time')
+    duration = models.IntegerField('duration')
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='booked_services', null=True,
+                              on_delete=models.SET_NULL)
 
 
 class OrderProducts(BaseModel):
     booking = models.ForeignKey(Orders, related_name='products', on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
     variant = models.ForeignKey(ProductVariants, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField('quantity', default=1)
+    unit_price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
+
+    @property
+    def total_price(self):
+        return self.quantity * self.unit_price.amount

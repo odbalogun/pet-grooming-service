@@ -2,9 +2,10 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderPets, OrderServices
+    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util import send_mail
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -186,21 +187,14 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class OrderServiceSerializer(serializers.ModelSerializer):
-    order = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Orders.objects.all())
-    service = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Services.objects.all())
-    pet = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=OrderPets.objects.all())
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = OrderServices
-        fields = '__all__'
-
-
-class OrderPetSerializer(serializers.ModelSerializer):
-    services = OrderServiceSerializer(many=True, read_only=False, required=True)
-
-    class Meta:
-        model = OrderPets
-        fields = '__all__'
+        fields = [
+            'id', 'service', 'pet', 'price', 'start_time', 'duration', 'staff'
+        ]
+        depth = 1
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -210,11 +204,17 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    pets = OrderPetSerializer(many=True, read_only=False, required=False)
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Company.objects.all())
+    pets = CustomerPetSerializer(many=True, read_only=False, required=False)
+    products = OrderProductSerializer(many=True, required=False)
+    services = OrderServiceSerializer(many=True, required=False)
 
     class Meta:
         model = Orders
         fields = '__all__'
+        depth = 2
+        extra_kwargs = {'end_time': {'read_only': True, 'required': False},
+                        'total_duration': {'read_only': True, 'required': False}}
 
     def create(self, validated_data):
         # save product
@@ -225,7 +225,13 @@ class OrderSerializer(serializers.ModelSerializer):
         for product in products:
             OrderProducts.objects.create(order=order, **product)
 
+        total_duration = 0
         for service in services:
-            OrderServices.objects.create(order=order, **service)
+            s = OrderServices.objects.create(order=order, **service)
+            total_duration += s.service.duration
+
+        order.total_duration = total_duration
+        order.end_time = order.start_time + timedelta(minutes=total_duration)
+        order.save()
 
         return order

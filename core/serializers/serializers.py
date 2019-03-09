@@ -203,7 +203,9 @@ class OrderServiceSerializer(serializers.ModelSerializer):
 class OrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProducts
-        fields = '__all__'
+        fields = [
+            'id', 'quantity', 'product', 'variant', 'unit_price'
+        ]
 
 
 class OrderSerializer(serializers.ModelSerializer):

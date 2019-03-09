@@ -194,7 +194,7 @@ class Orders(BaseModel):
 
 
 class OrderServices(BaseModel):
-    booking = models.ForeignKey(Orders, related_name='services', on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Orders, related_name='services', on_delete=models.SET_NULL, null=True)
     pet = models.ForeignKey(CustomerPets, related_name='services', on_delete=models.SET_NULL, null=True)
     service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
     price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
@@ -205,7 +205,7 @@ class OrderServices(BaseModel):
 
 
 class OrderProducts(BaseModel):
-    booking = models.ForeignKey(Orders, related_name='products', on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Orders, related_name='products', on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
     variant = models.ForeignKey(ProductVariants, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField('quantity', default=1)

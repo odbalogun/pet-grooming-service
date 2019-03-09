@@ -188,6 +188,9 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class OrderServiceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
+    pet = serializers.PrimaryKeyRelatedField(queryset=CustomerPets.objects.all(), many=False, required=True)
+    service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.all(), many=False, required=True)
+    staff = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False, required=False)
 
     class Meta:
         model = OrderServices
@@ -205,9 +208,9 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Company.objects.all())
-    pets = CustomerPetSerializer(many=True, read_only=False, required=False)
     products = OrderProductSerializer(many=True, required=False)
     services = OrderServiceSerializer(many=True, required=False)
+    customer = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=Customers.objects.all())
 
     class Meta:
         model = Orders
@@ -228,7 +231,7 @@ class OrderSerializer(serializers.ModelSerializer):
         total_duration = 0
         for service in services:
             s = OrderServices.objects.create(order=order, **service)
-            total_duration += s.service.duration
+            total_duration += s.duration
 
         order.total_duration = total_duration
         order.end_time = order.start_time + timedelta(minutes=total_duration)

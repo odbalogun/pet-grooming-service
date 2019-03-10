@@ -66,6 +66,7 @@ class Products(BaseModel):
     sku = models.CharField('sku', max_length=100, null=True)
     description = models.TextField('description')
     retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
+    image = models.ImageField(max_length=None, default='products/images/default-pro.jpg', upload_to='products/images/')
 
 
 class ProductVariants(BaseModel):

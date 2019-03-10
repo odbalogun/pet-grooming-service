@@ -2,6 +2,8 @@ from django.urls import path, include
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 from rest_framework_swagger.views import get_swagger_view
+from django.conf import settings
+from django.conf.urls.static import static
 import core.views as views
 
 app_name = 'core'
@@ -31,6 +33,6 @@ urlpatterns = [
     path('services/add-staff/', views.AddStaffToServiceView.as_view(), name="add_staff_to_service"),
     path('services/remove-staff/', views.RemoveStaffFromServiceView.as_view(), name="remove_staff_from_service")
     # path('api-auth/', include('rest_framework.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls

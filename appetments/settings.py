@@ -176,3 +176,7 @@ SWAGGER_SETTINGS = {
 # MAIL QUEUE SETTINGS
 MAILQUEUE_CELERY = True
 MAILQUEUE_QUEUE_UP = True
+
+# MEDIA settings
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

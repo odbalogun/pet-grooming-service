@@ -118,6 +118,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
     variants = serializers.SerializerMethodField()
+    image = serializers.ImageField(max_length=None, use_url=True)
 
     def get_variants(self, product):
         qs = ProductVariants.objects.filter(delete_status=False, product=product).all()

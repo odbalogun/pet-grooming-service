@@ -215,3 +215,12 @@ class OrderProducts(BaseModel):
     @property
     def total_price(self):
         return self.quantity * self.unit_price.amount
+
+
+class Messages(BaseModel):
+    subject = models.CharField('subject', max_length=200)
+    message = models.TextField('message')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_emails',
+                               on_delete=models.SET_NULL, null=True)
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='received_emails', on_delete=models.SET_NULL,
+                                 null=True)

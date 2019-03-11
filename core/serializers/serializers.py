@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices
+    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices, Messages
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util import send_mail
 from datetime import timedelta
@@ -321,3 +321,13 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
+    receiver = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
+
+    class Meta:
+        model = Messages
+        fields = '__all__'
+        depth = 1

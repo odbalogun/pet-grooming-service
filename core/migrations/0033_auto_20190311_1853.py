@@ -13,23 +13,23 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Messages',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='date created')),
-                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='date updated')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('delete_status', models.BooleanField(default=False, verbose_name='deleted')),
-                ('subject', models.CharField(max_length=200, verbose_name='subject')),
-                ('message', models.TextField(verbose_name='message')),
-                ('receiver', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='received_emails', to=settings.AUTH_USER_MODEL)),
-                ('sender', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sent_emails', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
+        # migrations.CreateModel(
+        #     name='Messages',
+        #     fields=[
+        #         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='date created')),
+        #         ('updated_at', models.DateTimeField(auto_now=True, verbose_name='date updated')),
+        #         ('is_active', models.BooleanField(default=True, verbose_name='active')),
+        #         ('delete_status', models.BooleanField(default=False, verbose_name='deleted')),
+        #         ('subject', models.CharField(max_length=200, verbose_name='subject')),
+        #         ('message', models.TextField(verbose_name='message')),
+        #         ('receiver', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='received_emails', to=settings.AUTH_USER_MODEL)),
+        #         ('sender', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sent_emails', to=settings.AUTH_USER_MODEL)),
+        #     ],
+        #     options={
+        #         'abstract': False,
+        #     },
+        # ),
         migrations.RemoveField(
             model_name='orderproducts',
             name='unit_price_currency',

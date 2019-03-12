@@ -64,7 +64,7 @@ class Products(BaseModel):
     name = models.CharField('product name', max_length=100)
     sku = models.CharField('sku', max_length=100, null=True)
     description = models.TextField('description')
-    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2)
+    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2, null=True)
     image = models.ImageField(max_length=None, null=True, default='products/images/default-pro.jpg', upload_to='products/images/')
 
 

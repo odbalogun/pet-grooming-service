@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # for swagger
     'rest_framework_swagger',
-    # for money fields
-    'djmoney',
     'mailqueue'
 ]
 

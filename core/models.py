@@ -1,5 +1,4 @@
 from django.db import models
-from djmoney.models.fields import MoneyField
 from django.conf import settings
 import datetime
 import random
@@ -65,8 +64,8 @@ class Products(BaseModel):
     name = models.CharField('product name', max_length=100)
     sku = models.CharField('sku', max_length=100, null=True)
     description = models.TextField('description')
-    retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
-    image = models.ImageField(max_length=None, default='products/images/default-pro.jpg', upload_to='products/images/')
+    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2)
+    image = models.ImageField(max_length=None, null=True, default='products/images/default-pro.jpg', upload_to='products/images/')
 
 
 class ProductVariants(BaseModel):
@@ -75,7 +74,7 @@ class ProductVariants(BaseModel):
     barcode = models.CharField('barcode', max_length=50)
     sku = models.CharField('sku', max_length=100)
     quantity = models.IntegerField('quantity')
-    retail_price = MoneyField('retail price', max_digits=10, decimal_places=2, default_currency='USD')
+    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2)
 
     def add_inventory_history(self, description, action, quantity):
         if action == 'sub':
@@ -90,7 +89,7 @@ class ProductVariants(BaseModel):
             "barcode": self.barcode,
             "sku": self.sku,
             "quantity": self.quantity,
-            "retail_price": self.retail_price.amount
+            "retail_price": self.retail_price
         }
 
 
@@ -115,7 +114,7 @@ class Services(BaseModel):
     name = models.CharField('name', max_length=100)
     description = models.TextField('description')
     duration = models.IntegerField('duration (in mins)', default=15)
-    price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
+    price = models.DecimalField('price', max_digits=10, decimal_places=2)
 
 
 class DatesClosed(models.Model):
@@ -187,7 +186,7 @@ class Orders(BaseModel):
     start_time = models.DateTimeField('start time')
     end_time = models.DateTimeField('end time', null=True)
     total_duration = models.IntegerField('total duration', null=True)
-    total_price = MoneyField('total price', max_digits=10, decimal_places=2, default_currency='USD')
+    total_price = models.DecimalField('total price', max_digits=10, decimal_places=2)
     status = models.CharField('status', default='booked', max_length=50)
     note = models.TextField('booking note', null=True)
     payment_status = models.CharField('payment status', default='pending', max_length=50)
@@ -198,7 +197,7 @@ class OrderServices(BaseModel):
     order = models.ForeignKey(Orders, related_name='services', on_delete=models.SET_NULL, null=True)
     pet = models.ForeignKey(CustomerPets, related_name='services', on_delete=models.SET_NULL, null=True)
     service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
-    price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
+    price = models.DecimalField('price', max_digits=10, decimal_places=2)
     start_time = models.DateTimeField('start time')
     duration = models.IntegerField('duration')
     staff = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='booked_services', null=True,
@@ -210,11 +209,11 @@ class OrderProducts(BaseModel):
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
     variant = models.ForeignKey(ProductVariants, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField('quantity', default=1)
-    unit_price = MoneyField('price', max_digits=10, decimal_places=2, default_currency='USD')
+    unit_price = models.DecimalField('price', max_digits=10, decimal_places=2)
 
     @property
     def total_price(self):
-        return self.quantity * self.unit_price.amount
+        return self.quantity * self.unit_price
 
 
 class Messages(BaseModel):

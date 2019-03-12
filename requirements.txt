@@ -8,7 +8,6 @@ coreschema==0.0.4
 Django==2.1.4
 django-cors-headers==2.4.0
 django-mail-queue==3.1.6
-django-money==0.14.4
 django-rest-swagger==2.1.2
 djangorestframework==3.9.0
 idna==2.8

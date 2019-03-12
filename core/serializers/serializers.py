@@ -72,7 +72,6 @@ class GroomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'is_groomer', 'company', 'email', 'password', 'auth_token')
-        # fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}, 'auth_token': {'read_only': True}}
 
     def create(self, validated_data):
@@ -118,7 +117,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
     variants = serializers.SerializerMethodField()
-    image = serializers.ImageField(max_length=None, use_url=True)
+    image = serializers.ImageField(max_length=None, use_url=True, required=False)
 
     def get_variants(self, product):
         qs = ProductVariants.objects.filter(delete_status=False, product=product).all()
@@ -128,6 +127,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Products
         fields = '__all__'
+        depth = 2
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -195,18 +195,14 @@ class OrderServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderServices
-        fields = [
-            'id', 'service', 'pet', 'price', 'start_time', 'duration', 'staff'
-        ]
+        fields = ('id', 'service', 'pet', 'price', 'start_time', 'duration', 'staff')
         depth = 1
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProducts
-        fields = [
-            'id', 'quantity', 'product', 'variant', 'unit_price'
-        ]
+        fields = ('id', 'quantity', 'product', 'variant', 'unit_price')
 
 
 class OrderSerializer(serializers.ModelSerializer):

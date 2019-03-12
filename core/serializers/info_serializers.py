@@ -8,10 +8,10 @@ class DatesClosedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DatesClosed
-        fields = 'closed_date'
+        fields = ('closed_date', )
 
 
 class DaysOffSerializer(serializers.ModelSerializer):
     class Meta:
         model = DaysOff
-        fields = 'day'
+        fields = ('day', )

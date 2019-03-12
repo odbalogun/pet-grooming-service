@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices, Messages
+    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util import send_mail
 from datetime import timedelta
@@ -78,7 +78,7 @@ class GroomerSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
 
         user.is_groomer = True
-        user.is_active = False
+        user.is_active = True
         user.set_password(validated_data['password'])
         user.generate_activation_key()
         user.save()
@@ -105,6 +105,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 class ProductVariantSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                  queryset=Products.objects.filter().all())
+    product_name = serializers.StringRelatedField(many=False, read_only=True, source='product')
 
     class Meta:
         model = ProductVariants
@@ -324,6 +325,6 @@ class MessageSerializer(serializers.ModelSerializer):
     receiver = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=User.objects.all())
 
     class Meta:
-        model = Messages
+        model = Products
         fields = '__all__'
         depth = 1

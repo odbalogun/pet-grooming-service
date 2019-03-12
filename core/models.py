@@ -74,7 +74,7 @@ class ProductVariants(BaseModel):
     barcode = models.CharField('barcode', max_length=50)
     sku = models.CharField('sku', max_length=100)
     quantity = models.IntegerField('quantity')
-    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2)
+    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2, null=True)
 
     def add_inventory_history(self, description, action, quantity):
         if action == 'sub':
@@ -186,7 +186,7 @@ class Orders(BaseModel):
     start_time = models.DateTimeField('start time')
     end_time = models.DateTimeField('end time', null=True)
     total_duration = models.IntegerField('total duration', null=True)
-    total_price = models.DecimalField('total price', max_digits=10, decimal_places=2)
+    total_price = models.DecimalField('total price', max_digits=10, decimal_places=2, null=True)
     status = models.CharField('status', default='booked', max_length=50)
     note = models.TextField('booking note', null=True)
     payment_status = models.CharField('payment status', default='pending', max_length=50)
@@ -197,7 +197,7 @@ class OrderServices(BaseModel):
     order = models.ForeignKey(Orders, related_name='services', on_delete=models.SET_NULL, null=True)
     pet = models.ForeignKey(CustomerPets, related_name='services', on_delete=models.SET_NULL, null=True)
     service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
-    price = models.DecimalField('price', max_digits=10, decimal_places=2)
+    price = models.DecimalField('price', max_digits=10, decimal_places=2, null=True)
     start_time = models.DateTimeField('start time')
     duration = models.IntegerField('duration')
     staff = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='booked_services', null=True,
@@ -209,11 +209,11 @@ class OrderProducts(BaseModel):
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
     variant = models.ForeignKey(ProductVariants, on_delete=models.SET_NULL, null=True)
     quantity = models.IntegerField('quantity', default=1)
-    unit_price = models.DecimalField('price', max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField('price', max_digits=10, decimal_places=2, null=True)
 
     @property
     def total_price(self):
-        return self.quantity * self.unit_price
+        return self.quantity * int(self.unit_price)
 
 
 class Messages(BaseModel):

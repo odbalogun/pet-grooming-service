@@ -109,7 +109,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariants
-        fields = ('id', 'name', 'quantity', 'retail_price', 'product')
+        fields = ('id', 'name', 'quantity', 'retail_price', 'product', 'product_name')
 
 
 class ProductSerializer(serializers.ModelSerializer):

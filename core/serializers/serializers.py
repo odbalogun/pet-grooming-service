@@ -5,7 +5,7 @@ from core.models import Company, Locations, ProductCategories, Products, Service
     AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util import send_mail
-from datetime import timedelta
+from django.utils.timezone import timedelta
 
 User = get_user_model()
 

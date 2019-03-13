@@ -1,4 +1,5 @@
-from rest_framework import status, generics
+from rest_framework import status
+from django.utils.timezone import localtime
 from rest_framework.decorators import action
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -22,10 +23,10 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
 
         if serializer.is_valid():
             token, created = Token.objects.get_or_create(user=serializer.validated_data['user'])
-            if not created and token.created < timezone.now() - datetime.timedelta(hours=EXPIRE_HOURS):
+            if not created and token.created < localtime() - datetime.timedelta(hours=EXPIRE_HOURS):
                 token.delete()
                 token = Token.objects.create(user=serializer.validated_data['user'])
-                token.created = datetime.datetime.utcnow()
+                token.created = localtime()
                 token.save()
 
             if token.user.company:
@@ -68,7 +69,7 @@ class GroomerViewSet(CustomModelViewSet):
             return Response({"detail": "No user found"}, status=status.HTTP_404_NOT_FOUND)
 
         # check if expired
-        if datetime.datetime.now() > user.key_expires:
+        if localtime() > user.key_expires:
             return Response({"detail": "Verification code has expired. Please request another"},
                             status=status.HTTP_410_GONE)
 

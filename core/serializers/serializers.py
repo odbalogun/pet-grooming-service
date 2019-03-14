@@ -117,6 +117,7 @@ class ProductSerializer(serializers.ModelSerializer):
                                                  queryset=Company.objects.all())
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
+    category_name = serializers.StringRelatedField(many=False, read_only=True, source='category')
     variants = serializers.SerializerMethodField()
     image = serializers.ImageField(max_length=None, use_url=True, required=False)
 
@@ -211,6 +212,7 @@ class OrderSerializer(serializers.ModelSerializer):
     products = OrderProductSerializer(many=True, required=False)
     services = OrderServiceSerializer(many=True, required=False)
     customer = serializers.PrimaryKeyRelatedField(many=False, required=True, queryset=Customers.objects.all())
+    customer_details = CustomerSerializer(many=False, read_only=True)
 
     class Meta:
         model = Orders

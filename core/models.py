@@ -56,6 +56,13 @@ class ProductCategories(BaseModel):
     company = models.ForeignKey(Company, related_name='product_brands', on_delete=models.CASCADE)
     category_name = models.CharField('category name', max_length=50)
 
+    def __unicode__(self):
+        return self.category_name
+
+    def __str__(self):
+        return self.category_name
+
+
 
 class Products(BaseModel):
     company = models.ForeignKey(Company, related_name='products', on_delete=models.CASCADE)

@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from core.views.base import CustomModelViewSet
-from core.serializers import CustomerSerializer, CustomerPetSerializer
-from core.models import Customers, CustomerPets
+from core.serializers import CustomerSerializer, CustomerPetSerializer, PetCategorySerializer
+from core.models import Customers, CustomerPets, PetCategories
 
 
 class CustomerViewSet(CustomModelViewSet):
@@ -32,7 +32,7 @@ class CustomerViewSet(CustomModelViewSet):
         data = self.request.data
         data["company"] = self.request.user.company.pk
 
-        if not Customers.objects.filter(company=data["company"], email=data["email"]).exists():
+        if not Customers.objects.filter(company=data.get("company", None), email=data.get("email", None)).exists():
             serializer = self.get_serializer(data=data)
             print(serializer.initial_data)
             serializer.is_valid(raise_exception=True)
@@ -48,3 +48,9 @@ class PetViewSet(CustomModelViewSet):
 
     def create(self, request, *args, **kwargs):
         return Response({"detail": "This operation is not allowed"}, status=status.HTTP_403_FORBIDDEN)
+
+
+class PetCategoryViewSet(CustomModelViewSet):
+    queryset = PetCategories.objects.all()
+    serializer_class = PetCategorySerializer
+

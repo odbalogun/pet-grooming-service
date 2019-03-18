@@ -63,7 +63,6 @@ class ProductCategories(BaseModel):
         return self.category_name
 
 
-
 class Products(BaseModel):
     company = models.ForeignKey(Company, related_name='products', on_delete=models.CASCADE)
     category = models.ForeignKey(ProductCategories, related_name='products', on_delete=models.CASCADE)
@@ -71,8 +70,8 @@ class Products(BaseModel):
     name = models.CharField('product name', max_length=100)
     sku = models.CharField('sku', max_length=100, null=True)
     description = models.TextField('description')
-    retail_price = models.DecimalField('retail price', max_digits=10, decimal_places=2, null=True)
-    image = models.ImageField(max_length=None, null=True, default='products/images/default-pro.jpg', upload_to='products/images/')
+    image = models.ImageField(max_length=None, null=True, default='products/images/default-pro.jpg',
+                              upload_to='products/images/')
 
 
 class ProductVariants(BaseModel):
@@ -174,16 +173,33 @@ class Customers(BaseModel):
         self.customer_code = code
 
 
+class PetCategories(BaseModel):
+    company = models.ForeignKey(Company, related_name='pet_categories', on_delete=models.CASCADE)
+    name = models.CharField('name', max_length=50)
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "name": self.name
+        }
+
+
 class CustomerPets(BaseModel):
     owner = models.ForeignKey(Customers, related_name='pets', on_delete=models.CASCADE)
     name = models.CharField('name', max_length=50)
-    pet_type = models.CharField('type', max_length=50)
+    category = models.ForeignKey(PetCategories, related_name='pets', null=True, on_delete=models.SET_NULL)
 
     def to_json(self):
         return {
             "id": self.pk,
             "name": self.name,
-            "pet_type": self.pet_type
+            "category": self.category.to_json()
         }
 
 

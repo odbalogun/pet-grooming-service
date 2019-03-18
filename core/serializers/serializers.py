@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from core.models import Company, Locations, ProductCategories, Products, ServiceGroups, Services, ProductVariants, \
-    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices
+    AutoNotifications, Customers, CustomerPets, Orders, OrderProducts, OrderServices, PetCategories
 from .info_serializers import DatesClosedSerializer, DaysOffSerializer
 from util import send_mail
 from django.utils.timezone import timedelta
@@ -162,13 +162,25 @@ class AutoNotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PetCategorySerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=False, queryset=Company.objects.all())
+
+    class Meta:
+        model = PetCategories
+        fields = '__all__'
+
+
 class CustomerPetSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                queryset=Customers.objects.all())
+    category_name = serializers.StringRelatedField(many=False, source='category')
+    category = serializers.PrimaryKeyRelatedField(required=True, queryset=PetCategories.objects.all())
+    # category_details = PetCategorySerializer(many=False, read_only=True)
 
     class Meta:
         model = CustomerPets
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ('id', 'name', 'owner', 'category', 'category_name')
 
 
 class CustomerSerializer(serializers.ModelSerializer):

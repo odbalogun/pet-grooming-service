@@ -207,8 +207,8 @@ class OrderServiceSerializer(serializers.ModelSerializer):
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.all(), many=False, required=True)
     staff = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False, required=False)
 
-    service_details = ServiceSerializer(many=False, read_only=True)
-    pet_details = CustomerPetSerializer(many=False, read_only=True)
+    service_details = ServiceSerializer(many=False, read_only=True, source='service')
+    pet_details = CustomerPetSerializer(many=False, read_only=True, source='pet')
 
     class Meta:
         model = OrderServices
@@ -217,8 +217,8 @@ class OrderServiceSerializer(serializers.ModelSerializer):
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
-    product_details = ProductSerializer(many=False, read_only=True)
-    variant_details = ProductVariantSerializer(many=False, read_only=True)
+    product_details = ProductSerializer(many=False, read_only=True, source='product')
+    variant_details = ProductVariantSerializer(many=False, read_only=True, source='variant')
 
     class Meta:
         model = OrderProducts
@@ -235,9 +235,9 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = '__all__'
-        depth = 2
         extra_kwargs = {'end_time': {'read_only': True, 'required': False},
                         'total_duration': {'read_only': True, 'required': False}}
+        depth = 5
 
     def create(self, validated_data):
         # save product

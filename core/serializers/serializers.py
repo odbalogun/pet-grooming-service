@@ -137,7 +137,7 @@ class ServiceSerializer(serializers.ModelSerializer):
                                                  queryset=Company.objects.all())
     group = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                queryset=ServiceGroups.objects.all())
-    staff_details = serializers.ListField(read_only=True, source='staff_details')
+    staff_details = serializers.ListField(read_only=True)
 
     class Meta:
         model = Services

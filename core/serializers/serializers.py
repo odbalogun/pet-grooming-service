@@ -212,7 +212,7 @@ class OrderServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderServices
-        fields = ('id', 'service', 'service_details', 'pet_details' 'pet', 'price', 'start_time', 'duration', 'staff')
+        fields = ('id', 'service', 'service_details', 'pet_details', 'pet', 'price', 'start_time', 'duration', 'staff')
         depth = 1
 
 

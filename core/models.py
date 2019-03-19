@@ -73,6 +73,12 @@ class Products(BaseModel):
     image = models.ImageField(max_length=None, null=True, default='products/images/default-pro.jpg',
                               upload_to='products/images/')
 
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
 
 class ProductVariants(BaseModel):
     product = models.ForeignKey(Products, related_name='variants', on_delete=models.CASCADE)

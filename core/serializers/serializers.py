@@ -207,16 +207,22 @@ class OrderServiceSerializer(serializers.ModelSerializer):
     service = serializers.PrimaryKeyRelatedField(queryset=Services.objects.all(), many=False, required=True)
     staff = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False, required=False)
 
+    service_details = ServiceSerializer(many=False, read_only=True)
+    pet_details = CustomerPets(many=False, read_only=True)
+
     class Meta:
         model = OrderServices
-        fields = ('id', 'service', 'pet', 'price', 'start_time', 'duration', 'staff')
+        fields = ('id', 'service', 'service_details', 'pet_details' 'pet', 'price', 'start_time', 'duration', 'staff')
         depth = 1
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
+    product_details = ProductSerializer(many=False, read_only=True)
+    variant_details = ProductVariantSerializer(many=False, read_only=True)
+
     class Meta:
         model = OrderProducts
-        fields = ('id', 'quantity', 'product', 'variant', 'unit_price')
+        fields = ('id', 'quantity', 'product', 'variant', 'product_details', 'variant_details', 'unit_price')
 
 
 class OrderSerializer(serializers.ModelSerializer):

@@ -128,6 +128,14 @@ class Services(BaseModel):
     duration = models.IntegerField('duration (in mins)', default=15)
     price = models.DecimalField('price', max_digits=10, decimal_places=2)
 
+    @property
+    def staff_details(self):
+        data = []
+
+        for x in self.staff.all():
+            data.append(x.to_json())
+        return data
+
 
 class DatesClosed(models.Model):
     company = models.ForeignKey(Company, related_name='dates_closed', on_delete=models.CASCADE)

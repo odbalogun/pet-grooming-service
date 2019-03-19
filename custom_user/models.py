@@ -61,3 +61,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_key = hashlib.sha512("{}{}".format(self.email, random_string(10)).encode("utf8"))\
             .hexdigest()
         self.password_key_expires = localtime() + timedelta(days=1)
+
+    def to_json(self):
+        return {
+            "id": self.pk,
+            "email": self.email,
+            "full_name": self.get_full_name(),
+            "first_name": self.first_name,
+            "last_name": self.last_name
+        }

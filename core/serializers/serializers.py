@@ -208,7 +208,7 @@ class OrderServiceSerializer(serializers.ModelSerializer):
     staff = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False, required=False)
 
     service_details = ServiceSerializer(many=False, read_only=True)
-    pet_details = CustomerPets(many=False, read_only=True)
+    pet_details = CustomerPetSerializer(many=False, read_only=True)
 
     class Meta:
         model = OrderServices

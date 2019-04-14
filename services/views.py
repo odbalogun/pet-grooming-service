@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
-from core.views.base import CustomModelViewSet
+from core.views import CustomModelViewSet
 from companies.models import Company
 from .models import Services, ServiceGroups
 from .serializers import ServiceGroupSerializer, ServiceSerializer

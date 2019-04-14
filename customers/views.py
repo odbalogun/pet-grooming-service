@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from .serializers import CustomerSerializer, CustomerPetSerializer, PetCategorySerializer
 from .models import Customers, CustomerPets, PetCategories
-from core.views.base import CustomModelViewSet
+from core.views import CustomModelViewSet
 
 
 class CustomerViewSet(CustomModelViewSet):

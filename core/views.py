@@ -1,7 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-import core.permissions as custom_permissions
 from rest_framework.decorators import action
+import core.permissions as custom_permissions
 
 
 class CustomModelViewSet(viewsets.ModelViewSet):

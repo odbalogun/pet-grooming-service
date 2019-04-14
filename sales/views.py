@@ -1,4 +1,4 @@
-from core.views.base import CustomModelViewSet
+from core.views import CustomModelViewSet
 from .serializers import OrderSerializer
 from .models import Orders
 

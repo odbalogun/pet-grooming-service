@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .serializers import MessageSerializer
 from .models import Messages
-from core.views.base import CustomModelViewSet
+from core.views import CustomModelViewSet
 
 User = get_user_model()
 

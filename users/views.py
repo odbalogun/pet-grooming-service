@@ -5,7 +5,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
-from core.views.base import CustomModelViewSet
+from core.views import CustomModelViewSet
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.conf import settings

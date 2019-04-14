@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['46.101.224.173', 'localhost', 'azultech.net']
 
 # Configuration to use custom user model
-AUTH_USER_MODEL = 'custom_user.User'
+AUTH_USER_MODEL = 'users.User'
 
 
 # Application definition
@@ -41,8 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'custom_user.apps.CustomUserConfig',
+    'users',
+    'companies',
+    'inventory',
+    'sales',
     'core',
+    'customers',
+    'services',
+    'reminders',
+    'custom_messages',
     'corsheaders',
     # add this to enable token authentication
     'rest_framework.authtoken',
@@ -146,7 +153,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.TokenAuthentication',
-        'core.authentication.ExpiringTokenAuthentication',
+        'users.authentication.ExpiringTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (

@@ -18,6 +18,14 @@ from django.urls import path, re_path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^', include('core.urls')),
     path('api-auth/', include('rest_framework.urls')),
+    re_path(r'^', include('core.urls')),
+    re_path(r'^', include('companies.urls')),
+    re_path(r'^', include('custom_messages.urls')),
+    re_path(r'^', include('customers.urls')),
+    re_path(r'^', include('inventory.urls')),
+    re_path(r'^', include('reminders.urls')),
+    re_path(r'^', include('sales.urls')),
+    re_path(r'^', include('services.urls')),
+    re_path(r'^', include('users.urls')),
 ]

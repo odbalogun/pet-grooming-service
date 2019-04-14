@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from util import send_mail
+from companies.models import Company
 
 User = get_user_model()
 

@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 from core.models import Company
-import core.views as views
 
 
 class BaseTestClass(APITestCase):

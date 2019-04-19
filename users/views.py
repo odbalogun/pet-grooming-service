@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from core.views import CustomModelViewSet
+from companies.serializers import CompanySerializer
+from companies.models import Company
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -48,9 +50,19 @@ class GroomerViewSet(CustomModelViewSet):
     queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):
+        # get company
+        company = request.data.pop('company')
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        user = serializer.instance
+
+        # save company
+        c = Company(company_name=company)
+        c.save()
+        c.staff.add(user)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['POST'])

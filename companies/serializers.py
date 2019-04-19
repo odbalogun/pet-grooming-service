@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Company, Locations, DatesClosed, DaysOff
+from .models import Company, Locations, DatesClosed, DaysOff, BankAccountDetails
 from users.serializers import StaffSerializer
 
 
@@ -39,4 +39,8 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BankAccountDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BankAccountDetails
+        fields = '__all__'
 

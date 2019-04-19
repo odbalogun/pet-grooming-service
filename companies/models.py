@@ -17,7 +17,6 @@ class Company(BaseModel):
     cancellation_limit = models.IntegerField('max hours to cancellation', default=3)
     opening_time = models.TimeField('daily opening time', default=datetime.time(9, 00))
     closing_time = models.TimeField('daily closing time', default=datetime.time(17, 00))
-    groomer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="store", null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.company_name
@@ -58,3 +57,14 @@ class DaysOff(models.Model):
             "id": self.pk,
             "day": self.day
         }
+
+
+class BankAccountDetails(models.Model):
+    company = models.ForeignKey(Company, related_name='bank_account_details', on_delete=models.CASCADE)
+    account = models.CharField('account', max_length=50)
+    account_name = models.CharField('account_name', max_length=50)
+    account_type = models.CharField('account_type', max_length=50)
+    bank_name = models.CharField('bank_name', max_length=100)
+    country = models.CharField('country', max_length=50)
+    last_four_digits = models.CharField('last_four_digits', max_length=10)
+    routing_number = models.CharField('routing_number', max_length=50)

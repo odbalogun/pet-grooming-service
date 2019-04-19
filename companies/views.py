@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets, permissions
-from .serializers import CompanySerializer, DatesClosedSerializer, DaysOffSerializer, LocationSerializer
-from .models import Company, DatesClosed, DaysOff, Locations
+from .serializers import CompanySerializer, DatesClosedSerializer, DaysOffSerializer, LocationSerializer, \
+    BankAccountDetailsSerializer
+from .models import Company, DatesClosed, DaysOff, Locations, BankAccountDetails
 from rest_framework.response import Response
 from rest_framework.decorators import action
 import core.permissions as custom_permissions
@@ -160,3 +161,9 @@ class LocationViewSet(CustomModelViewSet):
 
         # return response
         return Response({"detail": "Success"}, status=status.HTTP_202_ACCEPTED)
+
+
+class BankAccountDetailsViewSet(CustomModelViewSet):
+    queryset = BankAccountDetails.objects.all()
+    serializer_class = BankAccountDetailsSerializer
+    permission_classes = (custom_permissions.HasCompany, custom_permissions.IsGroomerOrReadOnly)

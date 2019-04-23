@@ -40,13 +40,14 @@ class StaffSerializer(serializers.ModelSerializer):
 
 
 class GroomerSerializer(serializers.ModelSerializer):
-    # company = serializers.PrimaryKeyRelatedField(many=False, queryset=Company.objects.all())
-    company = serializers.StringRelatedField(many=False, read_only=True)
+    company = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    company_name = serializers.StringRelatedField(many=False, read_only=True, source='company')
     # token = serializers.StringRelatedField()
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'company', 'email', 'password', 'auth_token')
+        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'company', 'company_name',
+                  'email', 'password', 'auth_token')
         extra_kwargs = {'password': {'write_only': True}, 'auth_token': {'read_only': True}}
 
     def create(self, validated_data):

@@ -32,7 +32,8 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
                 token.save()
 
             if token.user.company:
-                return Response({"auth_token": token.key, "company": token.user.company.company_name,
+                return Response({"auth_token": token.key, "company": token.user.company.pk,
+                                 "company_name": token.user.company.company_name,
                                  "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS),
                                  "id": token.user.id}, status=status.HTTP_200_OK)
             else:

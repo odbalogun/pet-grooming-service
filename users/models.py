@@ -11,6 +11,7 @@ import hashlib
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
+    password = models.CharField('password', max_length=128, null=True)
     first_name = models.CharField('first name', max_length=100)
     last_name = models.CharField('last name', max_length=100)
     created_at = models.DateTimeField('date created', auto_now_add=True)
@@ -23,6 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     key_expires = models.DateTimeField(null=True)
     password_reset_key = models.CharField(max_length=400, null=True)
     password_key_expires = models.DateTimeField(null=True)
+    is_google_signup = models.BooleanField(default=False)
 
     objects = UserManager()
 

@@ -11,7 +11,7 @@ from companies.models import Company
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from .serializers import GroomerSerializer, StaffSerializer
+from .serializers import GroomerSerializer, StaffSerializer, GoogleUserSerializer
 import datetime
 
 
@@ -191,3 +191,42 @@ class GroomerViewSet(CustomModelViewSet):
 class StaffViewSet(CustomModelViewSet):
     queryset = User.objects.all()
     serializer_class = StaffSerializer
+
+
+class GoogleViewSet(CustomModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = GoogleUserSerializer
+    permission_classes = ()
+
+    @action(detail=False, methods=['POST'])
+    def signup(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['POST'])
+    def login(self, request):
+        data = request.data
+        auth_token = data.pop('auth_token')
+
+        serializer = self.get_serializer(data=data)
+        user = serializer.instance
+
+        token, created = Token.objects.get_or_create(user=user.pk, key=auth_token)
+        if not created and token.created < localtime() - datetime.timedelta(hours=EXPIRE_HOURS):
+            token.delete()
+            token = Token.objects.create(user=user.pk, key=auth_token)
+            token.created = localtime()
+            token.save()
+
+        if user.company:
+            return Response({"auth_token": token.key, "company": user.company.pk, "id": user.pk,
+                             "company_name": user.company.company_name,
+                             "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS)
+                             }, status=status.HTTP_200_OK)
+        else:
+            return Response({"auth_token": token.key, "company": user.company, "id": user.pk,
+                             'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)},
+                            status=status.HTTP_200_OK)

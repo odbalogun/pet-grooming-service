@@ -67,3 +67,22 @@ class GroomerSerializer(serializers.ModelSerializer):
                                             "localhost:8000/verify-email?token={}'>link</a> to verify your account".
                   format(user.activation_key), user.email)
         return user
+
+
+class GoogleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'company', 'company_name',
+                  'email', 'auth_token')
+
+    def create(self, validated_data):
+        user = User(**validated_data)
+
+        user.is_groomer = True
+        user.is_google_signup = True
+        user.save()
+
+        # create user token for rest authentication
+        Token.objects.create(user=user, key=validated_data['auth_token'])
+
+        return user

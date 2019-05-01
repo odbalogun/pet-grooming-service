@@ -50,9 +50,9 @@ class ProductVariantsViewSet(CustomModelViewSet):
         variant = self.get_object()
 
         if request.data.get("action") == 'sub':
-            variant.quantity -= request.data.get("quantity")
+            variant.quantity -= int(request.data.get("quantity"))
         else:
-            variant.quantity += request.data.get("quantity")
+            variant.quantity += int(request.data.get("quantity"))
 
         variant.add_inventory_history(description=request.data.get("description"), action=request.data.get("action"),
                                       quantity=request.data.get("quantity"))

@@ -72,16 +72,17 @@ class GroomerSerializer(serializers.ModelSerializer):
 class GoogleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'email', 'auth_token')
+        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'email', 'google_id', 'auth_token')
+        extra_kwargs = {'is_groomer': {'read_only': True}, 'auth_token': {'read_only': True}}
 
     def create(self, validated_data):
         user = User(**validated_data)
 
         user.is_groomer = True
-        user.is_google_signup = True
+        user.is_active = True
         user.save()
 
         # create user token for rest authentication
-        Token.objects.create(user=user, key=validated_data['auth_token'])
+        Token.objects.create(user=user)
 
         return user

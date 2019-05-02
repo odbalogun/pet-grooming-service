@@ -208,25 +208,23 @@ class GoogleViewSet(CustomModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def login(self, request):
-        data = request.data
-        auth_token = data.pop('auth_token')
+        user = User.objects.get(google_id=request.data.get('google_id'))
 
-        serializer = self.get_serializer(data=data)
-        user = serializer.instance
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            if not created and token.created < timezone.now() - datetime.timedelta(hours=EXPIRE_HOURS):
+                token.delete()
+                token = Token.objects.create(user=user)
+                token.created = datetime.datetime.utcnow()
+                token.save()
 
-        token, created = Token.objects.get_or_create(user=user.pk, key=auth_token)
-        if not created and token.created < localtime() - datetime.timedelta(hours=EXPIRE_HOURS):
-            token.delete()
-            token = Token.objects.create(user=user.pk, key=auth_token)
-            token.created = localtime()
-            token.save()
-
-        if user.company:
-            return Response({"auth_token": token.key, "company": user.company.pk, "id": user.pk,
-                             "company_name": user.company.company_name,
-                             "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS)
-                             }, status=status.HTTP_200_OK)
-        else:
-            return Response({"auth_token": token.key, "company": user.company, "id": user.pk,
-                             'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)},
-                            status=status.HTTP_200_OK)
+            if user.company:
+                return Response({"auth_token": token.key, "company": user.company.pk, "id": user.pk,
+                                 "company_name": user.company.company_name,
+                                 "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS)
+                                 }, status=status.HTTP_200_OK)
+            else:
+                return Response({"auth_token": token.key, "company": user.company, "id": user.pk,
+                                 'expiry_date': token.created + datetime.timedelta(hours=EXPIRE_HOURS)},
+                                status=status.HTTP_200_OK)
+        return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)

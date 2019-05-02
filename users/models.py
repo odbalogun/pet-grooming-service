@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     key_expires = models.DateTimeField(null=True)
     password_reset_key = models.CharField(max_length=400, null=True)
     password_key_expires = models.DateTimeField(null=True)
-    is_google_signup = models.BooleanField(default=False)
+    google_id = models.CharField('google id', null=True, max_length=100)
 
     objects = UserManager()
 

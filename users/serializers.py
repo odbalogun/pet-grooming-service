@@ -72,8 +72,7 @@ class GroomerSerializer(serializers.ModelSerializer):
 class GoogleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'company', 'company_name',
-                  'email', 'auth_token')
+        fields = ('id', 'first_name', 'last_name', 'is_groomer', 'email', 'auth_token')
 
     def create(self, validated_data):
         user = User(**validated_data)

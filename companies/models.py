@@ -8,7 +8,7 @@ import string
 
 class Company(BaseModel):
     company_name = models.CharField('company name', max_length=200, null=False)
-    company_code = models.CharField('code', max_length=20)
+    company_code = models.CharField('code', max_length=20, null=True)
     description = models.TextField('description', null=True)
     website = models.CharField('website', max_length=100, null=True)
     contact_number = models.CharField('contact number', max_length=50, null=True)

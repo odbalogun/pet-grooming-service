@@ -30,13 +30,17 @@ class LocationSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
-    groomer = StaffSerializer(many=False, read_only=True)
+    # groomer = StaffSerializer(many=False, read_only=True)
+    groomer = serializers.SerializerMethodField(source='get_groomer', read_only=True)
     dates_closed = DatesClosedSerializer(many=True, read_only=True)
     days_off = DaysOffSerializer(many=True, read_only=True)
 
     class Meta:
         model = Company
         fields = '__all__'
+
+    def get_groomer(self, obj):
+        return obj.groomer.to_json()
 
 
 class BankAccountDetailsSerializer(serializers.ModelSerializer):

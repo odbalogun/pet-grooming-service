@@ -32,6 +32,12 @@ class ObtainExpiringAuthToken(ObtainAuthToken):
                 token.save()
 
             if token.user.company:
+                # check if company has code
+                if not token.user.company.company_code:
+                    c = token.user.company
+                    c.generate_code()
+                    c.save()
+
                 return Response({"auth_token": token.key, "company": token.user.company.pk,
                                  "company_name": token.user.company.company_name,
                                  "expiry_date": token.created + datetime.timedelta(hours=EXPIRE_HOURS),
@@ -61,6 +67,7 @@ class GroomerViewSet(CustomModelViewSet):
 
         # save company
         c = Company(company_name=company)
+        c.generate_code()
         c.save()
         c.staff.add(user)
 

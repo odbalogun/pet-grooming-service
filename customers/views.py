@@ -42,6 +42,19 @@ class CustomerViewSet(CustomModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'detail': 'This customer already exists'}, status=status.HTTP_409_CONFLICT)
 
+    @action(detail=False, methods=["POST"])
+    def login(self, request):
+        """
+        Returns client details based on the client code.
+        Expects single parameter: customer_code
+        """
+        data = self.request.data
+
+        serializer = self.get_serializer(data=data)
+        if serializer:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'detail': 'This customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class PetViewSet(CustomModelViewSet):
     queryset = CustomerPets.objects.all()

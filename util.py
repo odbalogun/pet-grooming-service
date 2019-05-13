@@ -1,6 +1,7 @@
 from mailqueue.models import MailerMessage
 import random
 import string
+import time
 
 
 def send_mail(subject, message, to, sender='info@appetments.com'):
@@ -30,3 +31,7 @@ def random_string(length):
     for i in range(length):
         random_list.append(random.choice(string.ascii_uppercase + string.digits))
     return ''.join(random_list)
+
+
+def time_periods(start_time='00:00', end_time='23:59'):
+    periods = time

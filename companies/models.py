@@ -2,10 +2,13 @@ from django.db import models
 from django.conf import settings
 import datetime
 from core.models import BaseModel
+import random
+import string
 
 
 class Company(BaseModel):
     company_name = models.CharField('company name', max_length=200, null=False)
+    company_code = models.CharField('code', max_length=20)
     description = models.TextField('description', null=True)
     website = models.CharField('website', max_length=100, null=True)
     contact_number = models.CharField('contact number', max_length=50, null=True)
@@ -23,6 +26,16 @@ class Company(BaseModel):
 
     def __str__(self):
         return self.company_name
+
+    @property
+    def groomer(self):
+        return self.staff.filter(is_groomer=True).first()
+
+    def generate_code(self, size=10):
+        code = ''.join(random.choice(string.ascii_letters[26:] + string.digits) for i in range(size))
+        if Company.objects.filter(company_code=code).exists():
+            self.generate_code()
+        self.company_code = code
 
 
 class Locations(BaseModel):

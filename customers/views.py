@@ -48,11 +48,10 @@ class CustomerViewSet(CustomModelViewSet):
         Returns client details based on the client code.
         Expects single parameter: customer_code
         """
-        data = self.request.data
+        instance = self.get_object()
 
-        serializer = self.get_serializer(data=data)
-        if serializer:
-            serializer.is_valid(raise_exception=False)
+        if instance:
+            serializer = self.get_serializer(instance)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'detail': 'This customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
 

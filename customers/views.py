@@ -52,8 +52,22 @@ class CustomerViewSet(CustomModelViewSet):
 
         serializer = self.get_serializer(data=data)
         if serializer:
+            serializer.is_valid(raise_exception=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'detail': 'This customer does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=["POST"])
+    def signup(self, request):
+        # accept data
+        data = self.request.data
+
+        if not Customers.objects.filter(company=data.get("company", None), email=data.get("email", None)).exists():
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'detail': 'This customer already exists'}, status=status.HTTP_409_CONFLICT)
 
 
 class PetViewSet(CustomModelViewSet):

@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from django.shortcuts import get_object_or_404
 from .serializers import CustomerSerializer, CustomerPetSerializer, PetCategorySerializer
 from .models import Customers, CustomerPets, PetCategories
 from core.views import CustomModelViewSet
@@ -48,7 +48,7 @@ class CustomerViewSet(CustomModelViewSet):
         Returns client details based on the client code.
         Expects single parameter: customer_code
         """
-        instance = self.get_object()
+        instance = get_object_or_404(self.queryset, **{'customer_code': self.request.data.get('customer_code')})
 
         if instance:
             serializer = self.get_serializer(instance)

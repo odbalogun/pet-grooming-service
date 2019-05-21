@@ -92,11 +92,12 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["POST"], url_path="get-by-code")
     def get_by_company_code(self, request):
-        data = self.request.data
+        queryset = self.queryset.filter(company_code=self.request.data.get('company_code'))
 
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(queryset, many=False)
         if serializer:
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         return Response({'detail': 'This company does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 

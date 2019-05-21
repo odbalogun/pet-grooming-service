@@ -31,7 +31,7 @@ class LocationSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True, required=False)
     # groomer = StaffSerializer(many=False, read_only=True)
-    groomer = serializers.SerializerMethodField(source='get_groomer', read_only=True)
+    groomer = serializers.SerializerMethodField()
     dates_closed = DatesClosedSerializer(many=True, read_only=True)
     days_off = DaysOffSerializer(many=True, read_only=True)
 
@@ -39,7 +39,8 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = '__all__'
 
-    def get_groomer(self, obj):
+    @staticmethod
+    def get_groomer(obj):
         return obj.groomer.to_json()
 
 

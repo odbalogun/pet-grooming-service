@@ -28,14 +28,15 @@ class ProductSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=True,
                                                   queryset=ProductCategories.objects.all())
     category_name = serializers.StringRelatedField(many=False, read_only=True, source='category')
-    variants = serializers.SerializerMethodField()
+    # variants = serializers.SerializerMethodField()
+    variants = ProductVariantSerializer(many=True, required=True)
     image = serializers.ImageField(max_length=None, use_url=True, required=False)
 
-    @staticmethod
-    def get_variants(product):
-        qs = ProductVariants.objects.filter(delete_status=False, product=product).all()
-        serializer = ProductVariantSerializer(instance=qs, many=True)
-        return serializer.data
+    # @staticmethod
+    # def get_variants(product):
+    #     qs = ProductVariants.objects.filter(delete_status=False, product=product).all()
+    #     serializer = ProductVariantSerializer(instance=qs, many=True)
+    #     return serializer.data
 
     class Meta:
         model = Products

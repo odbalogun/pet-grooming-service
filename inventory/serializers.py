@@ -38,6 +38,15 @@ class ProductSerializer(serializers.ModelSerializer):
     #     serializer = ProductVariantSerializer(instance=qs, many=True)
     #     return serializer.data
 
+    def create(self, validated_data):
+        variants = validated_data.pop('variants')
+        product = Products.objects.create(**validated_data)
+
+        for variant in variants:
+            ProductVariants.objects.create(product=product, **variant)
+
+        return product
+
     class Meta:
         model = Products
         fields = '__all__'

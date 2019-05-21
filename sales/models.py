@@ -16,6 +16,7 @@ class Orders(BaseModel):
     total_duration = models.IntegerField('total duration', null=True)
     total_price = models.DecimalField('total price', max_digits=10, decimal_places=2, null=True)
     status = models.CharField('status', default='booked', max_length=50)
+    booking_type = models.CharField('booking type', default='in-house', max_length=50)
     note = models.TextField('booking note', null=True)
     payment_status = models.CharField('payment status', default='pending', max_length=50)
     payment_reference = models.CharField('payment reference', null=True, max_length=100)

@@ -92,13 +92,23 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["POST"], url_path="get-by-code")
     def get_by_company_code(self, request):
-        queryset = self.queryset.filter(company_code=self.request.data.get('company_code'))
-
-        serializer = self.get_serializer(queryset, many=False)
+        # queryset = self.queryset.filter(company_code=self.request.data.get('company_code'))
+        # print(request.GET.get('company_code'))
+        # print('------')
+        instance = Company.objects.get(company_code=self.request.data.get('company_code'))
+        serializer = self.get_serializer(instance, many=False)
         if serializer:
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'detail': 'This company does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=["GET"], url_path="generate-code")
+    def generate_company_code(self, request, pk=None):
+        company = self.get_object()
+        company.generate_code()
+        company.save()
+
+        return Response(self.get_serializer(company).data, status=status.HTTP_200_OK)
 
 
 class LocationViewSet(CustomModelViewSet):
